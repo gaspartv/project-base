@@ -10,3 +10,9 @@ services:
       - POSTGRESQL_USERNAME=docker
       - POSTGRESQL_PASSWORD=docker
       - POSTGRESQL_DATABASE=db-tibia-info
+
+  redis:
+    container_name: redis-tibia-info
+    image: redis:latest
+    ports:
+      - 6379:6379

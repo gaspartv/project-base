@@ -7,95 +7,42 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum SexType {
-  male
-  female
-}
+enum ELanguage {
+  EN_US
+  PT_BR
 
-model Character {
-  id          String  @id @default(uuid()) @map("id") @db.Uuid
-  name        String
-  formerNames String
-  sex         SexType
-  vocation    String
-  level       Int     @default(0)
-  residence   String
-  formerWorld String?
-
-  Member   Member @relation(fields: [memberId], references: [id])
-  memberId String @unique @db.Uuid
-
-  World   World  @relation(fields: [worldId], references: [id])
-  worldId String @db.Uuid
-
-  User   User   @relation(fields: [userId], references: [id])
-  userId String @db.Uuid
-
-  HundedBy Hunted[]
-
-  @@map("characters")
-}
-
-model Guild {
-  id String @id @default(uuid()) @map("id") @db.Uuid
-
-  World   World  @relation(fields: [worldId], references: [id])
-  worldId String @db.Uuid
-
-  Hunteds   Hunted[]
-  Members   Member[]
-  Purchases Purchase[]
-}
-
-model Hunted {
-  id String @id @default(uuid()) @map("id") @db.Uuid
-
-  Guild   Guild  @relation(fields: [guildId], references: [id])
-  guildId String @db.Uuid
-
-  Character   Character @relation(fields: [characterId], references: [id])
-  characterId String    @db.Uuid
-}
-
-model Member {
-  id String @id @default(uuid()) @map("id") @db.Uuid
-
-  Guild   Guild  @relation(fields: [guildId], references: [id])
-  guildId String @db.Uuid
-
-  Character Character?
-}
-
-model Purchase {
-  id String @id @default(uuid()) @map("id") @db.Uuid
-
-  User   User   @relation(fields: [userId], references: [id])
-  userId String @db.Uuid
-
-  Guild   Guild  @relation(fields: [guildId], references: [id])
-  guildId String @db.Uuid
-}
-
-model Session {
-  id String @id @default(uuid()) @map("id") @db.Uuid
-
-  User   User   @relation(fields: [userId], references: [id])
-  userId String @db.Uuid
+  @@map("languages")
 }
 
 model User {
-  id String @id @default(uuid()) @map("id") @db.Uuid
+  id String @id @default(uuid()) @db.Uuid
 
-  Characters Character[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  disabledAt DateTime?
+  deletedAt  DateTime?
+
+  firstName    String
+  lastName     String
+  email        String    @unique
+  phone        String    @unique
+  passwordHash String
+  description  String?
+  imageUri     String?
+  darkMode     Boolean   @default(false)
+  language     ELanguage @default(PT_BR)
 
   Sessions Session[]
-
-  Purchases Purchase[]
 }
 
-model World {
-  id String @id @default(uuid()) @map("id") @db.Uuid
+model Session {
+  id String @id @default(uuid()) @db.Uuid
 
-  Characters Character[]
-  Guild      Guild[]
+  connectedAt    DateTime  @default(now())
+  disconnectedAt DateTime?
+  expiresAt      DateTime
+  tokens         String[]
+
+  User   User   @relation(fields: [userId], references: [id])
+  userId String @db.Uuid
 }

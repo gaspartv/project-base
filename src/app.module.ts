@@ -8,7 +8,9 @@ import {
 import { ConfigModule } from '@nestjs/config'
 import { APP_GUARD, APP_PIPE } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
+import { ServeStaticModule } from '@nestjs/serve-static'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
+import { join } from 'path'
 import { CheckPasswordGuard } from './common/guards/check-password.guard'
 import { RefreshTokenMiddleware } from './common/middlewares/refresh-token.middleware'
 import { AuthModule } from './modules/auth/auth.module'
@@ -31,6 +33,10 @@ import { RedisModule } from './recipes/redis/redis.module'
     ConfigModule.forRoot({
       isGlobal: true,
       validationOptions: { allowUnknown: false }
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'tmp'),
+      serveRoot: '/tmp'
     }),
     PrismaModule,
     RedisModule,

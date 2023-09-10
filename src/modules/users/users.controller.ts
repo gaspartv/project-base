@@ -6,6 +6,7 @@ import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { ResponseUserEntity } from './entities/response-user.entity'
 import { UsersService } from './users.service'
+import { CreateMessageFileDto } from './entities/update-photo-user.entity'
 
 @ApiTags('User')
 @Controller('users')
@@ -18,7 +19,6 @@ export class UsersController {
     return this.service.create(dto)
   }
 
-  @IsPublic()
   @Patch(':id')
   update(
     @Param('id', ParseUuidPipe)
@@ -26,5 +26,13 @@ export class UsersController {
     @Body() dto: UpdateUserDto
   ): Promise<ResponseUserEntity> {
     return this.service.update(id, dto)
+  }
+
+  @Patch(':id/photo')
+  updatePhoto(
+    @Body() body: CreateMessageFileDto,
+    @Param('id', ParseUuidPipe) id: string
+  ): Promise<ResponseUserEntity> {
+    return this.service.updatePhoto(id, body.file)
   }
 }

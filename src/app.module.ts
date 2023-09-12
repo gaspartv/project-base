@@ -35,8 +35,7 @@ import { RedisModule } from './recipes/redis/redis.module'
       validationOptions: { allowUnknown: false }
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'tmp'),
-      serveRoot: '/tmp'
+      rootPath: join(__dirname, '..', 'tmp')
     }),
     PrismaModule,
     RedisModule,

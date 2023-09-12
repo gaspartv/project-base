@@ -26,7 +26,9 @@ export class ResponseUserEntity {
     this.email = user.email
     this.phone = user.phone
     this.description = user.description || null
-    this.imageUri = user.imageUri || null
+    this.imageUrl = user.imageUri
+      ? `${process.env.URL_BACKEND}/tmp/avatar/${user.imageUri}`
+      : null
     this.darkMode = user.darkMode
     this.language = user.language
   }
@@ -40,7 +42,7 @@ export class ResponseUserEntity {
   email: string
   phone: string
   description: string | null
-  imageUri: string | null
+  imageUrl: string | null
   darkMode: boolean
   language: ELanguage
 }

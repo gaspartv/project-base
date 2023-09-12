@@ -1,5 +1,5 @@
 import { join } from 'path'
 
-export const rootDirname = __dirname
+export const rootDirname: string = __dirname
 
-export const mainDirname = join(rootDirname, '..')
+export const mainDirname: string = join(rootDirname, '..', '..')

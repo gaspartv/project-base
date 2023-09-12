@@ -11,7 +11,7 @@ export class OptionalParseEnumPipe
   extends ParseEnumPipe
   implements PipeTransform
 {
-  async transform(value: any, metadata: ArgumentMetadata) {
+  async transform(value: any, metadata: ArgumentMetadata): Promise<any> {
     try {
       if (value === undefined || value === null) {
         return value

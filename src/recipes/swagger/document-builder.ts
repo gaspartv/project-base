@@ -4,8 +4,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 export function documentBuilder(app: NestFastifyApplication) {
   const config = new DocumentBuilder()
     .addBearerAuth()
-    .setTitle('MIT Universe API')
-    .setDescription('API para o sistema MIT Universe')
+    .setTitle('API Tibia-Info')
+    .setDescription('API para o sistema do tibia-info.com')
     .setVersion('1.0')
     .build()
 

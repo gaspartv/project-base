@@ -21,9 +21,13 @@ export class RefreshTokenMiddleware implements NestMiddleware {
     private readonly jwtService: JwtService
   ) {}
 
-  async use(req: IRequest, res: FastifyReply, next: NextFunction) {
+  async use(
+    req: IRequest,
+    res: FastifyReply,
+    next: NextFunction
+  ): Promise<void> {
     if (req.headers.authorization) {
-      const token = req.headers.authorization.split('Bearer ')[1]
+      const token: string = req.headers.authorization.split('Bearer ')[1]
 
       if (!token) {
         throw new UnauthorizedException('Invalid token.')
@@ -41,7 +45,7 @@ export class RefreshTokenMiddleware implements NestMiddleware {
       }
       let user: UserEntity
 
-      const cachedUser = await this.redis.get(decoded.sign.sub)
+      const cachedUser: string = await this.redis.get(decoded.sign.sub)
       if (cachedUser) {
         const userCached: UserEntity = JSON.parse(cachedUser)
 
@@ -70,6 +74,8 @@ export class RefreshTokenMiddleware implements NestMiddleware {
         throw new UnauthorizedException('Expired token.')
       }
 
+      console.log(session.tokens.includes(token))
+
       if (session.tokens.includes(token)) {
         throw new UnauthorizedException('Expired token.')
       }
@@ -84,7 +90,9 @@ export class RefreshTokenMiddleware implements NestMiddleware {
           }
         }
 
-        const newToken = this.jwtService.sign(payload)
+        const newToken = this.jwtService.sign(payload, {
+          secret: process.env.JWT_SECRET
+        })
 
         req.headers.authorization = `Bearer ${newToken}`
 

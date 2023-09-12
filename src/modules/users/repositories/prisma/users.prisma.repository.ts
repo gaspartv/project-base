@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../../../../recipes/prisma/prisma.service'
 import { VerifyUniqueFieldUserDto } from '../../dto/verify-unique-field.dto'
+import { CreateUserEntity } from '../../entities/create-user.entity'
 import { UpdatePhotoUserEntity } from '../../entities/update-photo-user.entity'
+import { UpdateUserEntity } from '../../entities/update-user.entity'
 import { UserEntity } from '../../entities/user.entity'
 import { UsersRepository } from '../users.repository'
 
@@ -9,11 +11,11 @@ import { UsersRepository } from '../users.repository'
 export class UsersPrismaRepository implements UsersRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(entity: UserEntity): Promise<UserEntity> {
+  async create(entity: CreateUserEntity): Promise<UserEntity> {
     return await this.prisma.user.create({ data: entity })
   }
 
-  async update(id: string, entity: UserEntity): Promise<UserEntity> {
+  async update(id: string, entity: UpdateUserEntity): Promise<UserEntity> {
     return await this.prisma.user.update({ where: { id }, data: entity })
   }
 

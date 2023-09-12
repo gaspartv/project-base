@@ -5,8 +5,8 @@ import { ParseUuidPipe } from '../../common/pipes/parse-uuid.pipe'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { ResponseUserEntity } from './entities/response-user.entity'
-import { UsersService } from './users.service'
 import { CreateMessageFileDto } from './entities/update-photo-user.entity'
+import { UsersService } from './users.service'
 
 @ApiTags('User')
 @Controller('users')

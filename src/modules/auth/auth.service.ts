@@ -15,7 +15,7 @@ export class AuthService {
   ) {}
 
   async login(user: UserEntity): Promise<ResponseTokenDto> {
-    const expiresAt = expiresAtGenerator()
+    const expiresAt: Date = expiresAtGenerator()
 
     const session = await this.prisma.session.create({
       data: {

@@ -22,6 +22,7 @@
     "studio": "npx prisma studio"
   },
   "dependencies": {
+    "@faker-js/faker": "^8.0.2",
     "@fastify/cookie": "^9.0.4",
     "@fastify/cors": "^8.3.0",
     "@fastify/helmet": "^11.0.0",

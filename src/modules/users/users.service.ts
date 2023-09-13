@@ -75,7 +75,11 @@ export class UsersService {
   /// EXTRA ///
   async userOrThrow(id: string): Promise<UserEntity> {
     const user: UserEntity = await this.repository.findOne(id)
-    if (!user) throw new UserNotFoundError()
+
+    if (!user) {
+      throw new UserNotFoundError()
+    }
+
     return user
   }
 
@@ -107,6 +111,8 @@ export class UsersService {
     if (exceptions.length > 0) {
       throw new ConflictException(exceptions)
     }
+
+    return
   }
 
   private async verifyUniqueFieldToCreated(
@@ -136,5 +142,7 @@ export class UsersService {
     if (exceptions.length > 0) {
       throw new ConflictException(exceptions)
     }
+
+    return
   }
 }

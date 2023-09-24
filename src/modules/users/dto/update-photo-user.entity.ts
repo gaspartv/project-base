@@ -1,17 +1,5 @@
 import { IsObject } from 'class-validator'
 
-interface User {
-  imageUri: string
-}
-
-export class UpdatePhotoUserEntity {
-  constructor(user: User) {
-    this.imageUri = user.imageUri
-  }
-
-  imageUri: string
-}
-
 export class CreateMessageFileDto {
   @IsObject()
   file: MessageFileDto

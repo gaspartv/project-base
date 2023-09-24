@@ -1,24 +1,25 @@
-import {
-  Injectable,
-  NestMiddleware,
-  UnauthorizedException
-} from '@nestjs/common'
+import { Injectable, NestMiddleware } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { PrismaClient } from '@prisma/client'
 import { NextFunction } from 'express'
 import { FastifyReply } from 'fastify'
 import { IPayload } from '../../modules/auth/interfaces/payload.interface'
 import { IRequest } from '../../modules/auth/interfaces/request.interface'
-import { UserEntity } from '../../modules/users/entities/user.entity'
-import { RedisService } from '../../recipes/redis/redis.service'
+import {
+  SessionEntity,
+  SessionResponseEntity
+} from '../../modules/sessions/entities/session.entity'
+import { SessionsRepository } from '../../modules/sessions/repositories/sessions.repository'
+import { UserResponseEntity } from '../../modules/users/entities/user.entity'
+import { UsersRepository } from '../../modules/users/repositories/users.repository'
+import { InvalidTokenUnauthorizedError } from '../errors/unauthorized/InvalidTokenUnauthorized.error'
 import { expiresAtGenerator } from '../utils/expires-generator.util'
 
 @Injectable()
 export class RefreshTokenMiddleware implements NestMiddleware {
   constructor(
-    private readonly prisma: PrismaClient,
-    private readonly redis: RedisService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly usersRepository: UsersRepository,
+    private readonly sessionsRepository: SessionsRepository
   ) {}
 
   async use(
@@ -30,57 +31,51 @@ export class RefreshTokenMiddleware implements NestMiddleware {
       const token: string = req.headers.authorization.split('Bearer ')[1]
 
       if (!token) {
-        throw new UnauthorizedException('Invalid token.')
+        throw new InvalidTokenUnauthorizedError()
       }
 
       const decoded: any = this.jwtService.decode(token)
 
-      if (
+      const validateDecoded =
         !decoded ||
         !decoded.sign ||
         !decoded.sign.sessionId ||
         !decoded.sign.sub
-      ) {
-        throw new UnauthorizedException('Invalid token.')
-      }
-      let user: UserEntity
 
-      const cachedUser: string = await this.redis.get(decoded.sign.sub)
-      if (cachedUser) {
-        const userCached: UserEntity = JSON.parse(cachedUser)
-
-        if (userCached.deletedAt === null && userCached.disabledAt === null) {
-          user = userCached
-        }
-      } else {
-        user = await this.prisma.user.findUnique({
-          where: { id: decoded.sign.sub, deletedAt: null, disabledAt: null }
-        })
+      if (validateDecoded) {
+        throw new InvalidTokenUnauthorizedError()
       }
 
-      if (!user) {
-        throw new UnauthorizedException('Invalid token.')
-      }
-
-      const session = await this.prisma.session.findUnique({
-        where: { id: decoded.sign.sessionId }
+      const user: UserResponseEntity = await this.usersRepository.findOneWhere({
+        id: decoded.sign.sub,
+        deletedAt: null,
+        disabledAt: null
       })
 
+      if (!user) {
+        throw new InvalidTokenUnauthorizedError()
+      }
+
+      const session: SessionResponseEntity =
+        await this.sessionsRepository.findOne(decoded.sign.sessionId)
+
       if (!session) {
-        throw new UnauthorizedException('Expired token.')
+        throw new InvalidTokenUnauthorizedError()
       }
 
       if (session.disconnectedAt !== null) {
-        throw new UnauthorizedException('Expired token.')
+        throw new InvalidTokenUnauthorizedError()
       }
-
-      console.log(session.tokens.includes(token))
 
       if (session.tokens.includes(token)) {
-        throw new UnauthorizedException('Expired token.')
+        throw new InvalidTokenUnauthorizedError()
       }
 
-      if (Number(new Date().getTime()) >= Number(session.expiresAt.getTime())) {
+      const validateDate: boolean =
+        Number(new Date().getTime()) >=
+        Number(new Date(session.expiresAt).getTime())
+
+      if (validateDate) {
         const expiresAt = expiresAtGenerator()
 
         const payload: IPayload = {
@@ -90,19 +85,19 @@ export class RefreshTokenMiddleware implements NestMiddleware {
           }
         }
 
-        const newToken = this.jwtService.sign(payload, {
+        const newToken: string = this.jwtService.sign(payload, {
           secret: process.env.JWT_SECRET
         })
 
         req.headers.authorization = `Bearer ${newToken}`
 
-        await this.prisma.session.update({
-          where: { id: session.id },
-          data: {
-            expiresAt,
-            tokens: [...session.tokens, token]
-          }
+        const entity: SessionEntity = new SessionEntity({
+          ...session,
+          expiresAt,
+          tokens: [...session.tokens, token]
         })
+
+        await this.sessionsRepository.update(session.id, entity)
       }
     }
 

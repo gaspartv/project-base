@@ -1,27 +1,22 @@
 import { VerifyUniqueFieldUserDto } from '../dto/verify-unique-field.dto'
-import { CreateUserEntity } from '../entities/create-user.entity'
-import { UpdatePhotoUserEntity } from '../entities/update-photo-user.entity'
-import { UpdateUserEntity } from '../entities/update-user.entity'
-import { UserEntity } from '../entities/user.entity'
+import { WhereUserDto } from '../dto/where-user.dto'
+import { UserEntity, UserResponseEntity } from '../entities/user.entity'
 
 export abstract class UsersRepository {
-  abstract create(entity: CreateUserEntity): Promise<UserEntity>
+  abstract create(entity: UserEntity): Promise<UserResponseEntity>
 
-  abstract update(id: string, entity: UpdateUserEntity): Promise<UserEntity>
+  abstract update(entity: UserEntity): Promise<UserResponseEntity>
 
-  abstract updatePhoto(
-    id: string,
-    entity: UpdatePhotoUserEntity
-  ): Promise<UserEntity>
+  abstract findOne(id: string): Promise<UserResponseEntity>
 
-  abstract findOne(id: string): Promise<UserEntity | null>
+  abstract findOneWhere(where: WhereUserDto): Promise<UserResponseEntity>
 
   abstract verifyUniqueFieldToCreated(
     dto: VerifyUniqueFieldUserDto
-  ): Promise<VerifyUniqueFieldUserDto | null>
+  ): Promise<VerifyUniqueFieldUserDto>
 
   abstract verifyUniqueFieldToUpdate(
     id: string,
     dto: VerifyUniqueFieldUserDto
-  ): Promise<VerifyUniqueFieldUserDto | null>
+  ): Promise<VerifyUniqueFieldUserDto>
 }

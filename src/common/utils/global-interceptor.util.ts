@@ -8,7 +8,7 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import { Observable, map } from 'rxjs'
 
 export interface Response<T> {
-  data: T
+  result: T
 }
 
 @Injectable()
@@ -30,8 +30,8 @@ export class TransformationInterceptor<T>
     }
 
     return next.handle().pipe(
-      map((data) => ({
-        data,
+      map((result) => ({
+        result,
         statusCode: response.statusCode,
         method: httpContext.getRequest().method,
         timestamp: new Date().toISOString(),

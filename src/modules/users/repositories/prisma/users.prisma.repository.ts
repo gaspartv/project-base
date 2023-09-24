@@ -1,33 +1,39 @@
 import { Injectable } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
 import { PrismaService } from '../../../../recipes/prisma/prisma.service'
 import { VerifyUniqueFieldUserDto } from '../../dto/verify-unique-field.dto'
-import { CreateUserEntity } from '../../entities/create-user.entity'
-import { UpdatePhotoUserEntity } from '../../entities/update-photo-user.entity'
-import { UpdateUserEntity } from '../../entities/update-user.entity'
-import { UserEntity } from '../../entities/user.entity'
+import { WhereUserDto } from '../../dto/where-user.dto'
+import { UserEntity, UserResponseEntity } from '../../entities/user.entity'
 import { UsersRepository } from '../users.repository'
 
 @Injectable()
 export class UsersPrismaRepository implements UsersRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(entity: CreateUserEntity): Promise<UserEntity> {
-    return await this.prisma.user.create({ data: entity })
+  private include: Prisma.UserInclude = {
+    Sessions: true
   }
 
-  async update(id: string, entity: UpdateUserEntity): Promise<UserEntity> {
-    return await this.prisma.user.update({ where: { id }, data: entity })
+  async create(entity: UserEntity): Promise<UserResponseEntity> {
+    return await this.prisma.user.create({
+      data: entity,
+      include: this.include
+    })
   }
 
-  async updatePhoto(
-    id: string,
-    entity: UpdatePhotoUserEntity
-  ): Promise<UserEntity> {
-    return await this.prisma.user.update({ where: { id }, data: entity })
+  async update(entity: UserEntity): Promise<UserResponseEntity> {
+    return await this.prisma.user.update({
+      where: { id: entity.id },
+      data: entity,
+      include: this.include
+    })
   }
 
-  async findOne(id: string): Promise<UserEntity> {
-    return await this.prisma.user.findUnique({ where: { id } })
+  async findOne(id: string): Promise<UserResponseEntity> {
+    return await this.prisma.user.findUnique({
+      where: { id, deletedAt: null, disabledAt: null },
+      include: this.include
+    })
   }
 
   async verifyUniqueFieldToCreated(
@@ -51,6 +57,13 @@ export class UsersPrismaRepository implements UsersRepository {
         ]
       },
       select: { email: true, phone: true }
+    })
+  }
+
+  async findOneWhere(where: WhereUserDto): Promise<UserResponseEntity> {
+    return await this.prisma.user.findFirst({
+      where,
+      include: this.include
     })
   }
 }

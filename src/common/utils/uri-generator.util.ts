@@ -1,5 +1,5 @@
 import { join } from 'path'
-import { MessageFileDto } from '../../modules/users/entities/update-photo-user.entity'
+import { MessageFileDto } from '../../modules/users/dto/update-photo-user.entity'
 import { mainDirname } from '../../root-dirname'
 
 export async function uriGenerator(file: MessageFileDto): Promise<string> {

@@ -3,23 +3,17 @@ import { hash } from 'bcryptjs'
 import { UserNotFoundError } from '../../common/errors/not-found/UserNotFound.error'
 import { uriGenerator } from '../../common/utils/uri-generator.util'
 import { CreateUserDto } from './dto/create-user.dto'
+import { MessageFileDto } from './dto/update-photo-user.entity'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { VerifyUniqueFieldUserDto } from './dto/verify-unique-field.dto'
-import { CreateUserEntity } from './entities/create-user.entity'
-import { ResponseUserEntity } from './entities/response-user.entity'
-import {
-  MessageFileDto,
-  UpdatePhotoUserEntity
-} from './entities/update-photo-user.entity'
-import { UpdateUserEntity } from './entities/update-user.entity'
-import { UserEntity } from './entities/user.entity'
+import { UserEntity, UserResponseEntity } from './entities/user.entity'
 import { UsersRepository } from './repositories/users.repository'
 
 @Injectable()
 export class UsersService {
   constructor(private readonly repository: UsersRepository) {}
 
-  async create(dto: CreateUserDto): Promise<ResponseUserEntity> {
+  async create(dto: CreateUserDto): Promise<UserResponseEntity> {
     await this.verifyUniqueFieldToCreated(dto.email, dto.phone)
 
     const passwordHash: string = await hash(
@@ -27,54 +21,53 @@ export class UsersService {
       Number(process.env.HASH_SALT)
     )
 
-    const entity: CreateUserEntity = new CreateUserEntity({
+    const entity: UserEntity = new UserEntity({
       ...dto,
-      passwordHash
+      passwordHash: passwordHash
     })
 
-    const userCreate: UserEntity = await this.repository.create(entity)
+    const userCreate: UserResponseEntity = await this.repository.create(entity)
 
-    return new ResponseUserEntity(userCreate)
+    return new UserResponseEntity(userCreate)
   }
 
-  async update(id: string, dto: UpdateUserDto): Promise<ResponseUserEntity> {
+  async update(id: string, dto: UpdateUserDto): Promise<UserResponseEntity> {
     await this.verifyUniqueFieldToUpdate(id, dto.email, dto.phone)
 
     const userFound: UserEntity = await this.userOrThrow(id)
 
-    const entity: UpdateUserEntity = new UpdateUserEntity({
+    const entity: UserEntity = new UserEntity({
       ...userFound,
       ...dto
     })
 
-    const userCreate: UserEntity = await this.repository.update(id, entity)
+    const userCreate: UserResponseEntity = await this.repository.update(entity)
 
-    return new ResponseUserEntity(userCreate)
+    return new UserResponseEntity(userCreate)
   }
 
   async updatePhoto(
     id: string,
     file: MessageFileDto
-  ): Promise<ResponseUserEntity> {
-    await this.userOrThrow(id)
+  ): Promise<UserResponseEntity> {
+    const userFound: UserEntity = await this.userOrThrow(id)
 
     const imageUri: string = await uriGenerator(file)
 
-    const entity: UpdatePhotoUserEntity = new UpdatePhotoUserEntity({
+    const entity: UserEntity = new UserEntity({
+      ...userFound,
       imageUri
     })
 
-    const userPhotoEdit: UserEntity = await this.repository.updatePhoto(
-      id,
-      entity
-    )
+    const userPhotoEdit: UserResponseEntity =
+      await this.repository.update(entity)
 
-    return new ResponseUserEntity(userPhotoEdit)
+    return new UserResponseEntity(userPhotoEdit)
   }
 
   /// EXTRA ///
-  async userOrThrow(id: string): Promise<UserEntity> {
-    const user: UserEntity = await this.repository.findOne(id)
+  async userOrThrow(id: string): Promise<UserResponseEntity> {
+    const user: UserResponseEntity = await this.repository.findOne(id)
 
     if (!user) {
       throw new UserNotFoundError()

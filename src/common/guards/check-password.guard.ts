@@ -1,34 +1,35 @@
 import {
   CanActivate,
-  ConflictException,
   ExecutionContext,
   Injectable,
-  UnauthorizedException
+  Logger
 } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
-import { PrismaClient } from '@prisma/client'
 import { compare } from 'bcryptjs'
-import { UserEntity } from '../../modules/users/entities/user.entity'
-import { RedisService } from '../../recipes/redis/redis.service'
+import { UserResponseEntity } from '../../modules/users/entities/user.entity'
+import { UsersRepository } from '../../modules/users/repositories/users.repository'
 import { IS_PASSWORD_CHECK_REQUIRED } from '../decorators/check-password.decorator'
+import { InvalidCredentialUnauthorizedError } from '../errors/unauthorized/InvalidCredentialUnauthorized.error'
 
 @Injectable()
 export class CheckPasswordGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    private prisma: PrismaClient,
-    private readonly redis: RedisService
+    private readonly usersRepository: UsersRepository
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requirePasswordCheck = this.reflector.getAllAndOverride<boolean>(
-      IS_PASSWORD_CHECK_REQUIRED,
-      [context.getHandler(), context.getClass()]
-    )
+    const requirePasswordCheck: boolean =
+      this.reflector.getAllAndOverride<boolean>(IS_PASSWORD_CHECK_REQUIRED, [
+        context.getHandler(),
+        context.getClass()
+      ])
 
-    if (!requirePasswordCheck) return true
+    if (!requirePasswordCheck) {
+      return true
+    }
 
-    const request = context.switchToHttp().getRequest()
+    const request: any = context.switchToHttp().getRequest()
 
     await this.validate(this.extract(request), request.raw.url)
 
@@ -39,52 +40,41 @@ export class CheckPasswordGuard implements CanActivate {
     data: { sub: string; password: string },
     url: string
   ): Promise<void> {
-    let user: UserEntity
-
-    const cachedUser = await this.redis.get(data.sub)
-
-    if (cachedUser) {
-      const userCached: UserEntity = JSON.parse(cachedUser)
-
-      if (userCached.deletedAt === null) {
-        if (url.includes('users/enable')) {
-          user = userCached
-        }
-
-        if (userCached.disabledAt === null) {
-          user = userCached
-        }
-      }
-    } else {
-      user = await this.prisma.user.findUnique({
-        where: {
-          id: data.sub,
-          deletedAt: null,
-          disabledAt: url.includes('users/enable') ? undefined : null
-        }
-      })
-    }
+    const user: UserResponseEntity = await this.usersRepository.findOneWhere({
+      deletedAt: null,
+      disabledAt: url.includes('users/enable') ? undefined : null
+    })
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials.')
+      throw new InvalidCredentialUnauthorizedError()
     }
 
-    const passwordValid = await compare(data.password, user.passwordHash)
+    const passwordValid: boolean = await compare(
+      data.password,
+      user.passwordHash
+    )
 
     if (!passwordValid) {
-      throw new UnauthorizedException('Invalid credentials.')
+      throw new InvalidCredentialUnauthorizedError()
     }
+
+    return
   }
 
   extract(req: any) {
     try {
-      if (!req.user.sign.sub || !req.body.password) {
-        throw new UnauthorizedException('Invalid token.')
+      const validateCredential: boolean =
+        !req.user.sign.sub || !req.body.password
+
+      if (validateCredential) {
+        throw new InvalidCredentialUnauthorizedError()
       }
+
       return { sub: req.user.sign.sub, password: req.body.password }
-    } catch (error) {
-      console.error(error)
-      throw new ConflictException('Invalid credentials.')
+    } catch (err) {
+      Logger.error(err)
+
+      throw new InvalidCredentialUnauthorizedError()
     }
   }
 }

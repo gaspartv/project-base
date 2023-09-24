@@ -15,7 +15,6 @@ import { ResponseTokenDto } from './dto/auth-response.dto'
 import { MessageDto } from './dto/message.dto'
 import { ISign } from './interfaces/payload.interface'
 import { IRequest } from './interfaces/request.interface'
-import { AuthLoginResponseMapper } from './mappers/auth-login.response.mapper'
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -27,15 +26,11 @@ export class AuthController {
   @Post()
   @HttpCode(HttpStatus.OK)
   async login(@Req() req: IRequest): Promise<ResponseTokenDto> {
-    const { token } = await this.service.login(req.user)
-
-    return AuthLoginResponseMapper(token)
+    return await this.service.login(req.user)
   }
 
   @Delete()
   async logout(@Sign() sign: ISign): Promise<MessageDto> {
-    await this.service.logout(sign.sub)
-
-    return { message: 'logout successfully' }
+    return await this.service.logout(sign.sub)
   }
 }

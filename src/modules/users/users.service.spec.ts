@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { Test, TestingModule } from '@nestjs/testing'
 import { CreateUserDto } from './dto/create-user.dto'
-import { ResponseUserEntity } from './entities/response-user.entity'
+import { UserResponseEntity } from './entities/user.entity'
 import { UsersFakeRepository } from './repositories/fake/users.fake.repository'
 import { UsersRepository } from './repositories/users.repository'
 import { UsersService } from './users.service'
@@ -37,11 +37,13 @@ describe('UsersService', () => {
       language: 'PT_BR'
     }
 
-    const user: ResponseUserEntity = await service.create(dto)
+    const user: UserResponseEntity = await service.create(dto)
+
+    console.log(user)
 
     expect(user).toBeDefined()
 
-    const expectedProperties: string[] = [
+    const expectedProperties = [
       'id',
       'createdAt',
       'updatedAt',
@@ -78,10 +80,7 @@ describe('UsersService', () => {
       language: 'PT_BR'
     }
 
-    const user1: ResponseUserEntity = await service.create(dto)
-    const user2: ResponseUserEntity = await service.create(dto)
-
-    console.log(user1)
-    console.log(user2)
+    const user1: UserResponseEntity = await service.create(dto)
+    const user2: UserResponseEntity = await service.create(dto)
   })
 })

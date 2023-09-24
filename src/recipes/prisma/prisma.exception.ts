@@ -38,10 +38,10 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
     const response: FastifyReply = ctx.getResponse<FastifyReply>()
     const error = exception as Prisma.PrismaClientKnownRequestError
 
-    const statusCode = this.getHttpStatus(error.code)
+    const statusCode: number = this.getHttpStatus(error.code)
 
     response.status(statusCode).send({
-      statusCode,
+      statusCode: statusCode,
       timestamp: new Date().toISOString(),
       message: error.message
     })

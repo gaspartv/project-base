@@ -1,26 +1,34 @@
 import { Injectable } from '@nestjs/common'
+import { expiresAtGenerator } from '../../common/utils/expires-generator.util'
+import { UsersRepository } from '../users/repositories/users.repository'
 import { CreateSessionDto } from './dto/create-session.dto'
-import { UpdateSessionDto } from './dto/update-session.dto'
+import { SessionEntity, SessionResponseEntity } from './entities/session.entity'
+import { SessionsRepository } from './repositories/sessions.repository'
 
 @Injectable()
 export class SessionsService {
-  create(createSessionDto: CreateSessionDto) {
-    return 'This action adds a new session'
+  constructor(
+    private readonly repository: SessionsRepository,
+    private readonly usersRepository: UsersRepository
+  ) {}
+
+  async create(dto: CreateSessionDto): Promise<SessionResponseEntity> {
+    await this.usersRepository.findOne(dto.userId)
+
+    const expiresAt: Date = expiresAtGenerator()
+
+    const entity: SessionEntity = new SessionEntity({
+      userId: dto.userId,
+      expiresAt: expiresAt,
+      tokens: []
+    })
+
+    return await this.repository.create(entity)
   }
 
-  findAll() {
-    return `This action returns all sessions`
-  }
+  async disconnectedMany(userId: string): Promise<{ count: number }> {
+    await this.usersRepository.findOne(userId)
 
-  findOne(id: number) {
-    return `This action returns a #${id} session`
-  }
-
-  update(id: number, updateSessionDto: UpdateSessionDto) {
-    return `This action updates a #${id} session`
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} session`
+    return await this.repository.disconnectedMany(userId)
   }
 }

@@ -1,7 +1,7 @@
 import fastifyCookie from '@fastify/cookie'
 import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
-import { NestInterceptor, ValidationPipe } from '@nestjs/common'
+import { Logger, NestInterceptor, ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import {
   FastifyAdapter,
@@ -58,7 +58,7 @@ async function bootstrap() {
   documentBuilder(app)
 
   await app.listen(Number(process.env.PORT_BACKEND), '0.0.0.0', () =>
-    console.info(`Server start in port ${process.env.PORT_BACKEND}`)
+    Logger.log(`> Server start in port ${process.env.PORT_BACKEND}`)
   )
 }
 bootstrap()

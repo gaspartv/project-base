@@ -1,51 +1,56 @@
 import { Injectable } from '@nestjs/common'
 import { randomUUID } from 'crypto'
+import { UserNotFoundError } from '../../../../common/errors/not-found/UserNotFound.error'
 import { VerifyUniqueFieldUserDto } from '../../dto/verify-unique-field.dto'
-import { CreateUserEntity } from '../../entities/create-user.entity'
-import { UpdatePhotoUserEntity } from '../../entities/update-photo-user.entity'
-import { UpdateUserEntity } from '../../entities/update-user.entity'
-import { UserEntity } from '../../entities/user.entity'
+import { WhereUserDto } from '../../dto/where-user.dto'
+import { UserEntity, UserResponseEntity } from '../../entities/user.entity'
 import { UsersRepository } from '../users.repository'
 
 @Injectable()
 export class UsersFakeRepository implements UsersRepository {
-  users: UserEntity[] = []
+  users: UserResponseEntity[] = []
 
-  async create(entity: CreateUserEntity): Promise<UserEntity> {
-    return new UserEntity({
-      ...entity,
+  async create(entity: UserEntity): Promise<UserResponseEntity> {
+    return new UserResponseEntity({
       id: randomUUID(),
       createdAt: new Date(),
       updatedAt: new Date(),
       disabledAt: null,
       deletedAt: null,
-      imageUri: null
-    })
-  }
-
-  async update(id: string, entity: UpdateUserEntity): Promise<UserEntity> {
-    const user = this.users.find((el) => el.id === id)
-
-    return new UserEntity({
-      ...user,
+      imageUri: null,
+      darkMode: false,
+      description: '',
+      email: null,
+      firstName: null,
+      language: 'PT_BR',
+      lastName: null,
+      passwordHash: '',
+      phone: '',
       ...entity
     })
   }
 
-  async updatePhoto(
-    id: string,
-    entity: UpdatePhotoUserEntity
-  ): Promise<UserEntity> {
-    const user = this.users.find((el) => el.id === id)
+  async update(entity: UserEntity): Promise<UserResponseEntity> {
+    const userIndex = this.users.findIndex((el) => el.id === entity.id)
 
-    return new UserEntity({
-      ...user,
+    const userEdit = {
+      ...this.users[userIndex],
       ...entity
-    })
+    }
+
+    this.users[userIndex] = userEdit
+
+    return new UserResponseEntity(userEdit)
   }
 
-  async findOne(id: string): Promise<UserEntity> {
-    return this.users.find((el) => el.id === id)
+  async findOne(id: string): Promise<UserResponseEntity> {
+    const user = this.users.find((el) => el.id === id)
+
+    if (!user) {
+      throw new UserNotFoundError()
+    }
+
+    return user
   }
 
   async verifyUniqueFieldToCreated(
@@ -65,5 +70,19 @@ export class UsersFakeRepository implements UsersRepository {
         (el.id !== id && el.email === dto.email) ||
         (el.id !== id && el.phone === dto.phone)
     )
+  }
+
+  async findOneWhere(where: WhereUserDto): Promise<UserResponseEntity> {
+    const user = this.users.find((user) => {
+      return Object.entries(where).every(([key, value]) => {
+        return user[key] === value
+      })
+    })
+
+    if (!user) {
+      throw new UserNotFoundError()
+    }
+
+    return user
   }
 }

@@ -1,28 +1,43 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { compare } from 'bcryptjs'
+import { LoginUnauthorizedError } from '../../common/errors/unauthorized/LoginUnauthorized.error'
 import { expiresAtGenerator } from '../../common/utils/expires-generator.util'
-import { UserEntity } from '../../modules/users/entities/user.entity'
-import { PrismaService } from '../../recipes/prisma/prisma.service'
+import {
+  UserEntity,
+  UserResponseEntity
+} from '../../modules/users/entities/user.entity'
+import {
+  SessionEntity,
+  SessionResponseEntity
+} from '../sessions/entities/session.entity'
+import { SessionsRepository } from '../sessions/repositories/sessions.repository'
+import { UsersRepository } from '../users/repositories/users.repository'
 import { ResponseTokenDto } from './dto/auth-response.dto'
+import { MessageDto } from './dto/message.dto'
 import { IPayload } from './interfaces/payload.interface'
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly sessionsRepository: SessionsRepository,
+    private readonly usersRepository: UsersRepository
   ) {}
 
   async login(user: UserEntity): Promise<ResponseTokenDto> {
     const expiresAt: Date = expiresAtGenerator()
 
-    const session = await this.prisma.session.create({
-      data: {
-        userId: user.id,
-        expiresAt
-      }
+    const entity: SessionEntity = new SessionEntity({
+      userId: user.id,
+      expiresAt: expiresAt,
+      tokens: []
     })
+
+    await this.sessionsRepository.disconnectedMany(user.id)
+
+    const session: SessionResponseEntity =
+      await this.sessionsRepository.create(entity)
 
     const payload: IPayload = {
       sign: {
@@ -36,31 +51,21 @@ export class AuthService {
     }
   }
 
-  async logout(userId: string): Promise<void> {
-    await this.prisma.session.updateMany({
-      where: {
-        userId,
-        disconnectedAt: null
-      },
-      data: {
-        disconnectedAt: new Date()
-      }
-    })
+  async logout(userId: string): Promise<MessageDto> {
+    await this.sessionsRepository.disconnectedMany(userId)
 
-    return
+    return { message: 'logout successfully' }
   }
 
   async validateUser(email: string, password: string): Promise<UserEntity> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        email,
-        deletedAt: null,
-        disabledAt: null
-      }
+    const user: UserResponseEntity = await this.usersRepository.findOneWhere({
+      email: email,
+      deletedAt: null,
+      disabledAt: null
     })
 
     if (!user) {
-      throw new UnauthorizedException('email or password incorrect.')
+      throw new LoginUnauthorizedError()
     }
 
     return await this.validate(user, password)
@@ -81,6 +86,6 @@ export class AuthService {
       }
     }
 
-    throw new UnauthorizedException('email or password incorrect.')
+    throw new LoginUnauthorizedError()
   }
 }

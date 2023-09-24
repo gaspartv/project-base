@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { randomUUID } from 'crypto'
 import { UserNotFoundError } from '../../../../common/errors/not-found/UserNotFound.error'
+import { PaginationEntity } from '../../../../common/pagination/pagination.entity'
 import { UserVerifyUniqueFieldDto } from '../../dto/verify-unique-field.dto'
 import { UserWhereDto } from '../../dto/where-user.dto'
 import { UserEntity, UserResponseEntity } from '../../entities/user.entity'
@@ -84,5 +85,63 @@ export class UsersFakeRepository implements UsersRepository {
     }
 
     return user
+  }
+
+  async findMany(options: PaginationEntity): Promise<UserResponseEntity[]> {
+    const { orderBy, skip, sort, take, where } = options
+
+    const {
+      darkMode,
+      deletedAt,
+      disabledAt,
+      email,
+      firstName,
+      imageUri,
+      language,
+      lastName,
+      phone
+    } = where
+
+    const usersFilter = this.users.filter((user) =>
+      user.darkMode === darkMode
+        ? darkMode
+        : undefined && user.deletedAt === deletedAt
+        ? deletedAt
+        : undefined && user.disabledAt === disabledAt
+        ? disabledAt
+        : undefined && user.email === email
+        ? email
+        : undefined && user.firstName === firstName
+        ? firstName
+        : undefined && user.imageUri === imageUri
+        ? imageUri
+        : undefined && user.language === language
+        ? language
+        : undefined && user.lastName === lastName
+        ? lastName
+        : undefined && user.phone === phone
+        ? phone
+        : undefined
+    )
+
+    const usersOrderBy = usersFilter.sort((a, b) =>
+      orderBy === email
+        ? sort === 'asc'
+          ? a.email.localeCompare(b.email)
+          : b.email.localeCompare(a.email)
+        : orderBy === firstName
+        ? sort === 'asc'
+          ? a.firstName.localeCompare(b.firstName)
+          : b.firstName.localeCompare(a.firstName)
+        : orderBy === lastName
+        ? sort === 'asc'
+          ? a.firstName.localeCompare(b.firstName)
+          : b.firstName.localeCompare(a.firstName)
+        : a.firstName.localeCompare(b.firstName)
+    )
+
+    const usersSlice = usersOrderBy.slice(skip, skip + take)
+
+    return usersSlice
   }
 }

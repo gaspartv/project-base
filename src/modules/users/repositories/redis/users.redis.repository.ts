@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { UserNotFoundError } from '../../../../common/errors/not-found/UserNotFound.error'
+import { PaginationEntity } from '../../../../common/pagination/pagination.entity'
 import { RedisService } from '../../../../recipes/redis/redis.service'
 import { UserVerifyUniqueFieldDto } from '../../dto/verify-unique-field.dto'
 import { UserWhereDto } from '../../dto/where-user.dto'
@@ -94,5 +95,23 @@ export class UsersRedisRepository implements UsersRepository {
     await this.redis.set(key, value, 'EX', 86400)
 
     return new UserResponseEntity(user)
+  }
+
+  async findMany(options: PaginationEntity): Promise<UserResponseEntity[]> {
+    const key = this.prefixEntities + JSON.stringify(options)
+
+    const usersCached = await this.redis.get(key)
+
+    if (usersCached) {
+      return JSON.parse(usersCached)
+    }
+
+    const users = await this.prisma.findMany(options)
+
+    const value = JSON.stringify(users)
+
+    await this.redis.set(key, value, 'EX', 86400)
+
+    return users
   }
 }

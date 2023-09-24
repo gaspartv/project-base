@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
+import { PaginationEntity } from '../../../../common/pagination/pagination.entity'
 import { PrismaService } from '../../../../recipes/prisma/prisma.service'
 import { UserVerifyUniqueFieldDto } from '../../dto/verify-unique-field.dto'
 import { UserWhereDto } from '../../dto/where-user.dto'
@@ -63,6 +64,13 @@ export class UsersPrismaRepository implements UsersRepository {
   async findOneWhere(where: UserWhereDto): Promise<UserResponseEntity> {
     return await this.prisma.user.findFirst({
       where,
+      include: this.include
+    })
+  }
+
+  async findMany(options: PaginationEntity): Promise<UserResponseEntity[]> {
+    return await this.prisma.user.findMany({
+      ...options,
       include: this.include
     })
   }

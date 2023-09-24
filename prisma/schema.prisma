@@ -15,10 +15,10 @@ enum ELanguage {
 }
 
 model User {
-  id String @id @default(uuid()) @db.Uuid
+  id String @id @db.Uuid
 
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime
+  updatedAt  DateTime
   disabledAt DateTime?
   deletedAt  DateTime?
 
@@ -29,20 +29,24 @@ model User {
   passwordHash String
   description  String?
   imageUri     String?
-  darkMode     Boolean   @default(false)
-  language     ELanguage @default(PT_BR)
+  darkMode     Boolean
+  language     ELanguage
 
   Sessions Session[]
+
+  @@map("users")
 }
 
 model Session {
-  id String @id @default(uuid()) @db.Uuid
+  id String @id @db.Uuid
 
-  connectedAt    DateTime  @default(now())
+  connectedAt    DateTime
   disconnectedAt DateTime?
   expiresAt      DateTime
   tokens         String[]
 
   User   User   @relation(fields: [userId], references: [id])
   userId String @db.Uuid
+
+  @@map("sessions")
 }

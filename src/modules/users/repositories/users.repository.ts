@@ -1,3 +1,4 @@
+import { PaginationEntity } from '../../../common/pagination/pagination.entity'
 import { UserVerifyUniqueFieldDto } from '../dto/verify-unique-field.dto'
 import { UserWhereDto } from '../dto/where-user.dto'
 import { UserEntity, UserResponseEntity } from '../entities/user.entity'
@@ -10,6 +11,8 @@ export abstract class UsersRepository {
   abstract findOne(id: string): Promise<UserResponseEntity>
 
   abstract findOneWhere(where: UserWhereDto): Promise<UserResponseEntity>
+
+  abstract findMany(options: PaginationEntity): Promise<UserResponseEntity[]>
 
   abstract verifyUniqueFieldToCreated(
     dto: UserVerifyUniqueFieldDto

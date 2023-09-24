@@ -3,7 +3,7 @@ import { hash } from 'bcryptjs'
 import { UserNotFoundError } from '../../common/errors/not-found/UserNotFound.error'
 import { uriGenerator } from '../../common/utils/uri-generator.util'
 import { UserCreateDto } from './dto/create-user.dto'
-import { MessageFileDto } from './dto/update-photo-user.entity'
+import { MessageFileDto } from './dto/update-photo-user.dto'
 import { UserUpdateDto } from './dto/update-user.dto'
 import { UserVerifyUniqueFieldDto } from './dto/verify-unique-field.dto'
 import { UserEntity, UserResponseEntity } from './entities/user.entity'
@@ -38,7 +38,8 @@ export class UsersService {
 
     const entity: UserEntity = new UserEntity({
       ...userFound,
-      ...dto
+      ...dto,
+      updatedAt: new Date()
     })
 
     const userCreate: UserResponseEntity = await this.repository.update(entity)
@@ -56,7 +57,8 @@ export class UsersService {
 
     const entity: UserEntity = new UserEntity({
       ...userFound,
-      imageUri
+      imageUri: imageUri,
+      updatedAt: new Date()
     })
 
     const userPhotoEdit: UserResponseEntity =

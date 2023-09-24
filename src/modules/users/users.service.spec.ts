@@ -48,12 +48,14 @@ describe('UsersService', () => {
       'createdAt',
       'updatedAt',
       'disabledAt',
+      'deletedAt',
       'firstName',
       'lastName',
       'email',
       'phone',
+      'passwordHash',
       'description',
-      'imageUrl',
+      'imageUri',
       'darkMode',
       'language'
     ]

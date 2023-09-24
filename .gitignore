@@ -1,5 +1,6 @@
 # Manual
 .env
+.vscode
 
 # compiled output
 /dist

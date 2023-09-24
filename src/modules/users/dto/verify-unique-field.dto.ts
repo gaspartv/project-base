@@ -1,4 +1,4 @@
-export class VerifyUniqueFieldUserDto {
+export class UserVerifyUniqueFieldDto {
   email: string
   phone: string
 }

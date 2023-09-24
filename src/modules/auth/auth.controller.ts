@@ -11,7 +11,7 @@ import { LocalAuth } from '../../common/decorators/auth-local.decorator'
 import { Sign } from '../../common/decorators/auth-sign.decorator'
 import { IsPublic } from '../../common/decorators/is-public.decorator'
 import { AuthService } from './auth.service'
-import { ResponseTokenDto } from './dto/auth-response.dto'
+import { TokenResponseDto } from './dto/auth-response.dto'
 import { MessageDto } from './dto/message.dto'
 import { ISign } from './interfaces/payload.interface'
 import { IRequest } from './interfaces/request.interface'
@@ -25,7 +25,7 @@ export class AuthController {
   @LocalAuth()
   @Post()
   @HttpCode(HttpStatus.OK)
-  async login(@Req() req: IRequest): Promise<ResponseTokenDto> {
+  async login(@Req() req: IRequest): Promise<TokenResponseDto> {
     return await this.service.login(req.user)
   }
 

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PrismaService } from '../../../../recipes/prisma/prisma.service'
-import { VerifyUniqueFieldUserDto } from '../../dto/verify-unique-field.dto'
-import { WhereUserDto } from '../../dto/where-user.dto'
+import { UserVerifyUniqueFieldDto } from '../../dto/verify-unique-field.dto'
+import { UserWhereDto } from '../../dto/where-user.dto'
 import { UserEntity, UserResponseEntity } from '../../entities/user.entity'
 import { UsersRepository } from '../users.repository'
 
@@ -37,8 +37,8 @@ export class UsersPrismaRepository implements UsersRepository {
   }
 
   async verifyUniqueFieldToCreated(
-    dto: VerifyUniqueFieldUserDto
-  ): Promise<VerifyUniqueFieldUserDto> {
+    dto: UserVerifyUniqueFieldDto
+  ): Promise<UserVerifyUniqueFieldDto> {
     return await this.prisma.user.findFirst({
       where: { OR: [{ email: dto.email }, { phone: dto.phone }] },
       select: { email: true, phone: true }
@@ -47,8 +47,8 @@ export class UsersPrismaRepository implements UsersRepository {
 
   async verifyUniqueFieldToUpdate(
     id: string,
-    dto: VerifyUniqueFieldUserDto
-  ): Promise<VerifyUniqueFieldUserDto> {
+    dto: UserVerifyUniqueFieldDto
+  ): Promise<UserVerifyUniqueFieldDto> {
     return await this.prisma.user.findFirst({
       where: {
         OR: [
@@ -60,7 +60,7 @@ export class UsersPrismaRepository implements UsersRepository {
     })
   }
 
-  async findOneWhere(where: WhereUserDto): Promise<UserResponseEntity> {
+  async findOneWhere(where: UserWhereDto): Promise<UserResponseEntity> {
     return await this.prisma.user.findFirst({
       where,
       include: this.include

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { UserNotFoundError } from '../../../../common/errors/not-found/UserNotFound.error'
 import { RedisService } from '../../../../recipes/redis/redis.service'
-import { VerifyUniqueFieldUserDto } from '../../dto/verify-unique-field.dto'
-import { WhereUserDto } from '../../dto/where-user.dto'
+import { UserVerifyUniqueFieldDto } from '../../dto/verify-unique-field.dto'
+import { UserWhereDto } from '../../dto/where-user.dto'
 import { UserEntity, UserResponseEntity } from '../../entities/user.entity'
 import { UsersPrismaRepository } from '../prisma/users.prisma.repository'
 import { UsersRepository } from '../users.repository'
@@ -68,19 +68,19 @@ export class UsersRedisRepository implements UsersRepository {
   }
 
   async verifyUniqueFieldToCreated(
-    dto: VerifyUniqueFieldUserDto
-  ): Promise<VerifyUniqueFieldUserDto> {
+    dto: UserVerifyUniqueFieldDto
+  ): Promise<UserVerifyUniqueFieldDto> {
     return await this.prisma.verifyUniqueFieldToCreated(dto)
   }
 
   async verifyUniqueFieldToUpdate(
     id: string,
-    dto: VerifyUniqueFieldUserDto
-  ): Promise<VerifyUniqueFieldUserDto> {
+    dto: UserVerifyUniqueFieldDto
+  ): Promise<UserVerifyUniqueFieldDto> {
     return await this.prisma.verifyUniqueFieldToUpdate(id, dto)
   }
 
-  async findOneWhere(where: WhereUserDto): Promise<UserResponseEntity> {
+  async findOneWhere(where: UserWhereDto): Promise<UserResponseEntity> {
     const user: UserResponseEntity = await this.prisma.findOneWhere(where)
 
     if (!user) {

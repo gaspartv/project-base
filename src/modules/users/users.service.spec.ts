@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { Test, TestingModule } from '@nestjs/testing'
-import { CreateUserDto } from './dto/create-user.dto'
+import { UserCreateDto } from './dto/create-user.dto'
 import { UserResponseEntity } from './entities/user.entity'
 import { UsersFakeRepository } from './repositories/fake/users.fake.repository'
 import { UsersRepository } from './repositories/users.repository'
@@ -25,7 +25,7 @@ describe('UsersService', () => {
   })
 
   it('should be created new user', async () => {
-    const dto: CreateUserDto = {
+    const dto: UserCreateDto = {
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
       description: faker.person.bio(),
@@ -68,7 +68,7 @@ describe('UsersService', () => {
   })
 
   it('cannot create user with repeated keys', async () => {
-    const dto: CreateUserDto = {
+    const dto: UserCreateDto = {
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
       description: faker.person.bio(),

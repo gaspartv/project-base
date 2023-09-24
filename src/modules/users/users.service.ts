@@ -2,10 +2,10 @@ import { ConflictException, Injectable } from '@nestjs/common'
 import { hash } from 'bcryptjs'
 import { UserNotFoundError } from '../../common/errors/not-found/UserNotFound.error'
 import { uriGenerator } from '../../common/utils/uri-generator.util'
-import { CreateUserDto } from './dto/create-user.dto'
+import { UserCreateDto } from './dto/create-user.dto'
 import { MessageFileDto } from './dto/update-photo-user.entity'
-import { UpdateUserDto } from './dto/update-user.dto'
-import { VerifyUniqueFieldUserDto } from './dto/verify-unique-field.dto'
+import { UserUpdateDto } from './dto/update-user.dto'
+import { UserVerifyUniqueFieldDto } from './dto/verify-unique-field.dto'
 import { UserEntity, UserResponseEntity } from './entities/user.entity'
 import { UsersRepository } from './repositories/users.repository'
 
@@ -13,7 +13,7 @@ import { UsersRepository } from './repositories/users.repository'
 export class UsersService {
   constructor(private readonly repository: UsersRepository) {}
 
-  async create(dto: CreateUserDto): Promise<UserResponseEntity> {
+  async create(dto: UserCreateDto): Promise<UserResponseEntity> {
     await this.verifyUniqueFieldToCreated(dto.email, dto.phone)
 
     const passwordHash: string = await hash(
@@ -31,7 +31,7 @@ export class UsersService {
     return new UserResponseEntity(userCreate)
   }
 
-  async update(id: string, dto: UpdateUserDto): Promise<UserResponseEntity> {
+  async update(id: string, dto: UserUpdateDto): Promise<UserResponseEntity> {
     await this.verifyUniqueFieldToUpdate(id, dto.email, dto.phone)
 
     const userFound: UserEntity = await this.userOrThrow(id)
@@ -83,12 +83,12 @@ export class UsersService {
   ): Promise<void> {
     const exceptions: string[] = []
 
-    const uniqueFields: VerifyUniqueFieldUserDto = {
+    const uniqueFields: UserVerifyUniqueFieldDto = {
       email: email || undefined,
       phone: phone || undefined
     }
 
-    const verifyUniqueKey: VerifyUniqueFieldUserDto =
+    const verifyUniqueKey: UserVerifyUniqueFieldDto =
       await this.repository.verifyUniqueFieldToUpdate(id, uniqueFields)
 
     if (verifyUniqueKey) {
@@ -114,12 +114,12 @@ export class UsersService {
   ): Promise<void> {
     const exceptions: string[] = []
 
-    const uniqueFields: VerifyUniqueFieldUserDto = {
+    const uniqueFields: UserVerifyUniqueFieldDto = {
       email: email,
       phone: phone
     }
 
-    const verifyUniqueKey: VerifyUniqueFieldUserDto =
+    const verifyUniqueKey: UserVerifyUniqueFieldDto =
       await this.repository.verifyUniqueFieldToCreated(uniqueFields)
 
     if (verifyUniqueKey) {

@@ -1,6 +1,6 @@
 import { IsObject } from 'class-validator'
 
-export class CreateMessageFileDto {
+export class MessageCreateFileDto {
   @IsObject()
   file: MessageFileDto
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { expiresAtGenerator } from '../../common/utils/expires-generator.util'
 import { UsersRepository } from '../users/repositories/users.repository'
-import { CreateSessionDto } from './dto/create-session.dto'
+import { SessionCreateDto } from './dto/create-session.dto'
 import { SessionEntity, SessionResponseEntity } from './entities/session.entity'
 import { SessionsRepository } from './repositories/sessions.repository'
 
@@ -12,7 +12,7 @@ export class SessionsService {
     private readonly usersRepository: UsersRepository
   ) {}
 
-  async create(dto: CreateSessionDto): Promise<SessionResponseEntity> {
+  async create(dto: SessionCreateDto): Promise<SessionResponseEntity> {
     await this.usersRepository.findOne(dto.userId)
 
     const expiresAt: Date = expiresAtGenerator()

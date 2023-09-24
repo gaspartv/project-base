@@ -1,3 +1,3 @@
-export class ResponseTokenDto {
+export class TokenResponseDto {
   token: string
 }

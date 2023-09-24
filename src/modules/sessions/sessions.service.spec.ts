@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { randomUUID } from 'crypto'
 import { UsersRepository } from '../users/repositories/users.repository'
-import { CreateSessionDto } from './dto/create-session.dto'
+import { SessionCreateDto } from './dto/create-session.dto'
 import { SessionsFakeRepository } from './repositories/fake/sessions.fake.repository'
 import { SessionsRepository } from './repositories/sessions.repository'
 import { SessionsService } from './sessions.service'
@@ -28,7 +28,7 @@ describe('SessionsService', () => {
   it('should create a new session', async () => {
     const userId = randomUUID()
 
-    const dto: CreateSessionDto = { userId }
+    const dto: SessionCreateDto = { userId }
 
     const session = await service.create(dto)
 
@@ -55,7 +55,7 @@ describe('SessionsService', () => {
   it('should call disconnectedMany on the repository', async () => {
     const userId = randomUUID()
 
-    const dto: CreateSessionDto = { userId }
+    const dto: SessionCreateDto = { userId }
 
     await service.create(dto)
     await service.create(dto)

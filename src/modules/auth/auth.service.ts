@@ -13,7 +13,7 @@ import {
 } from '../sessions/entities/session.entity'
 import { SessionsRepository } from '../sessions/repositories/sessions.repository'
 import { UsersRepository } from '../users/repositories/users.repository'
-import { ResponseTokenDto } from './dto/auth-response.dto'
+import { TokenResponseDto } from './dto/auth-response.dto'
 import { MessageDto } from './dto/message.dto'
 import { IPayload } from './interfaces/payload.interface'
 
@@ -25,7 +25,7 @@ export class AuthService {
     private readonly usersRepository: UsersRepository
   ) {}
 
-  async login(user: UserEntity): Promise<ResponseTokenDto> {
+  async login(user: UserEntity): Promise<TokenResponseDto> {
     const expiresAt: Date = expiresAtGenerator()
 
     const entity: SessionEntity = new SessionEntity({

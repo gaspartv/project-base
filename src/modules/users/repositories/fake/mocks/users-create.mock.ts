@@ -1,6 +1,6 @@
 import { ELanguage } from '@prisma/client'
 import { randomUUID } from 'crypto'
-import { CreateUserDto } from '../../../dto/create-user.dto'
+import { UserCreateDto } from '../../../dto/create-user.dto'
 
 export const userCreateEntityMock = {
   id: randomUUID(),
@@ -20,7 +20,7 @@ export const userCreateEntityMock = {
   password: '123'
 }
 
-export const userCreateMock: CreateUserDto = {
+export const userCreateMock: UserCreateDto = {
   email: 'test@mail.com',
   firstName: 'test',
   lastName: 'test',
@@ -32,7 +32,7 @@ export const userCreateMock: CreateUserDto = {
   imageUri: null
 }
 
-export const userCreateToUpdateMock: CreateUserDto = {
+export const userCreateToUpdateMock: UserCreateDto = {
   email: 'test_update@mail.com',
   firstName: 'test_update',
   lastName: 'test_update',

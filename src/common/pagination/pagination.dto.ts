@@ -1,7 +1,7 @@
 import { Expose } from 'class-transformer'
 import { IsEnum, IsOptional, IsString } from 'class-validator'
 
-export enum PaginationOrder {
+enum PaginationSort {
   ASC = 'asc',
   DESC = 'desc'
 }
@@ -10,20 +10,23 @@ export class PaginationDto {
   @Expose()
   @IsOptional()
   @IsString()
-  page: number
+  skip: number
 
   @Expose()
   @IsOptional()
   @IsString()
-  size: number
+  take: number
 
   @Expose()
   @IsOptional()
-  @IsString()
-  sort: string
+  @IsEnum(PaginationSort)
+  sort: PaginationSort
 
   @Expose()
   @IsOptional()
-  @IsEnum(PaginationOrder)
-  order: PaginationOrder
+  orderBy: any
+
+  @Expose()
+  @IsOptional()
+  where: any
 }

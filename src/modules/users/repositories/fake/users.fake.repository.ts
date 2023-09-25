@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common'
 import { randomUUID } from 'crypto'
 import { UserNotFoundError } from '../../../../common/errors/not-found/UserNotFound.error'
-import { PaginationEntity } from '../../../../common/pagination/pagination.entity'
+import { UserPaginationDto } from '../../dto/pagination-user.dto'
 import { UserVerifyUniqueFieldDto } from '../../dto/verify-unique-field.dto'
 import { UserWhereDto } from '../../dto/where-user.dto'
-import { UserEntity, UserResponseEntity } from '../../entities/user.entity'
+import { UserEntity } from '../../entities/user.entity'
 import { UsersRepository } from '../users.repository'
 
 @Injectable()
 export class UsersFakeRepository implements UsersRepository {
-  users: UserResponseEntity[] = []
+  users: UserEntity[] = []
 
-  async create(entity: UserEntity): Promise<UserResponseEntity> {
-    return new UserResponseEntity({
+  async create(entity: UserEntity): Promise<UserEntity> {
+    return new UserEntity({
       id: randomUUID(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -31,7 +31,7 @@ export class UsersFakeRepository implements UsersRepository {
     })
   }
 
-  async update(entity: UserEntity): Promise<UserResponseEntity> {
+  async update(entity: UserEntity): Promise<UserEntity> {
     const userIndex = this.users.findIndex((el) => el.id === entity.id)
 
     const userEdit = {
@@ -41,10 +41,10 @@ export class UsersFakeRepository implements UsersRepository {
 
     this.users[userIndex] = userEdit
 
-    return new UserResponseEntity(userEdit)
+    return new UserEntity(userEdit)
   }
 
-  async findOne(id: string): Promise<UserResponseEntity> {
+  async findOne(id: string): Promise<UserEntity> {
     const user = this.users.find((el) => el.id === id)
 
     if (!user) {
@@ -73,7 +73,7 @@ export class UsersFakeRepository implements UsersRepository {
     )
   }
 
-  async findOneWhere(where: UserWhereDto): Promise<UserResponseEntity> {
+  async findOneWhere(where: UserWhereDto): Promise<UserEntity> {
     const user = this.users.find((user) => {
       return Object.entries(where).every(([key, value]) => {
         return user[key] === value
@@ -87,7 +87,7 @@ export class UsersFakeRepository implements UsersRepository {
     return user
   }
 
-  async findMany(options: PaginationEntity): Promise<UserResponseEntity[]> {
+  async findMany(options: UserPaginationDto): Promise<UserEntity[]> {
     const { orderBy, skip, sort, take, where } = options
 
     const {
@@ -143,5 +143,45 @@ export class UsersFakeRepository implements UsersRepository {
     const usersSlice = usersOrderBy.slice(skip, skip + take)
 
     return usersSlice
+  }
+
+  async count(options: UserPaginationDto): Promise<number> {
+    const { where } = options
+
+    const {
+      darkMode,
+      deletedAt,
+      disabledAt,
+      email,
+      firstName,
+      imageUri,
+      language,
+      lastName,
+      phone
+    } = where
+
+    const usersFilter = this.users.filter((user) =>
+      user.darkMode === darkMode
+        ? darkMode
+        : undefined && user.deletedAt === deletedAt
+        ? deletedAt
+        : undefined && user.disabledAt === disabledAt
+        ? disabledAt
+        : undefined && user.email === email
+        ? email
+        : undefined && user.firstName === firstName
+        ? firstName
+        : undefined && user.imageUri === imageUri
+        ? imageUri
+        : undefined && user.language === language
+        ? language
+        : undefined && user.lastName === lastName
+        ? lastName
+        : undefined && user.phone === phone
+        ? phone
+        : undefined
+    )
+
+    return usersFilter.length
   }
 }

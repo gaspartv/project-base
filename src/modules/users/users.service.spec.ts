@@ -39,8 +39,6 @@ describe('UsersService', () => {
 
     const user: UserResponseEntity = await service.create(dto)
 
-    console.log(user)
-
     expect(user).toBeDefined()
 
     const expectedProperties = [

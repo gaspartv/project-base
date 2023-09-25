@@ -1,10 +1,20 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query
+} from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { Sign } from '../../common/decorators/auth-sign.decorator'
 import { IsPublic } from '../../common/decorators/is-public.decorator'
 import { ParseUuidPipe } from '../../common/pipes/parse-uuid.pipe'
 import { ISign } from '../auth/interfaces/payload.interface'
 import { UserCreateDto } from './dto/create-user.dto'
+import { UserPaginationDto } from './dto/pagination-user.dto'
+import { PaginationResponseUserDto } from './dto/response-pagination-user.dto'
 import { MessageCreateFileDto } from './dto/update-photo-user.dto'
 import { UserUpdateDto } from './dto/update-user.dto'
 import { UserResponseEntity } from './entities/user.entity'
@@ -25,12 +35,19 @@ export class UsersController {
   async findOne(
     @Param('id', ParseUuidPipe) id: string
   ): Promise<UserResponseEntity> {
-    return await this.service.userOrThrow(id)
+    return await this.service.findOne(id)
   }
 
   @Get('/profile')
   async findProfile(@Sign() sign: ISign): Promise<UserResponseEntity> {
-    return await this.service.userOrThrow(sign.sub)
+    return await this.service.findOne(sign.sub)
+  }
+
+  @Get()
+  async findMany(
+    @Query() pagination: UserPaginationDto
+  ): Promise<PaginationResponseUserDto> {
+    return await this.service.findMany(pagination)
   }
 
   @Patch(':id')

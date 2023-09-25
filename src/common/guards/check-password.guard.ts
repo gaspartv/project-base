@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { compare } from 'bcryptjs'
-import { UserResponseEntity } from '../../modules/users/entities/user.entity'
+import { UserEntity } from '../../modules/users/entities/user.entity'
 import { UsersRepository } from '../../modules/users/repositories/users.repository'
 import { IS_PASSWORD_CHECK_REQUIRED } from '../decorators/check-password.decorator'
 import { InvalidCredentialUnauthorizedError } from '../errors/unauthorized/InvalidCredentialUnauthorized.error'
@@ -40,7 +40,7 @@ export class CheckPasswordGuard implements CanActivate {
     data: { sub: string; password: string },
     url: string
   ): Promise<void> {
-    const user: UserResponseEntity = await this.usersRepository.findOneWhere({
+    const user: UserEntity = await this.usersRepository.findOneWhere({
       deletedAt: null,
       disabledAt: url.includes('users/enable') ? undefined : null
     })

@@ -1,6 +1,7 @@
 import { ELanguage } from '@prisma/client'
 
 export class UserWhereDto {
+  id?: string
   disabledAt?: Date | null
   deletedAt?: Date | null
   firstName?: string

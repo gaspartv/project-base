@@ -58,7 +58,7 @@ export class AuthService {
   }
 
   async validateUser(email: string, password: string): Promise<UserEntity> {
-    const user: UserResponseEntity = await this.usersRepository.findOneWhere({
+    const user: UserEntity = await this.usersRepository.findOneWhere({
       email: email,
       deletedAt: null,
       disabledAt: null

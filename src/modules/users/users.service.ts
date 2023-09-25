@@ -1,8 +1,11 @@
 import { ConflictException, Injectable } from '@nestjs/common'
 import { hash } from 'bcryptjs'
 import { UserNotFoundError } from '../../common/errors/not-found/UserNotFound.error'
+import { PaginationUtil } from '../../common/pagination/pagination.util'
 import { uriGenerator } from '../../common/utils/uri-generator.util'
 import { UserCreateDto } from './dto/create-user.dto'
+import { UserPaginationDto } from './dto/pagination-user.dto'
+import { PaginationResponseUserDto } from './dto/response-pagination-user.dto'
 import { MessageFileDto } from './dto/update-photo-user.dto'
 import { UserUpdateDto } from './dto/update-user.dto'
 import { UserVerifyUniqueFieldDto } from './dto/verify-unique-field.dto'
@@ -26,9 +29,9 @@ export class UsersService {
       passwordHash: passwordHash
     })
 
-    const userCreate: UserResponseEntity = await this.repository.create(entity)
+    const userCreate = await this.repository.create(entity)
 
-    return new UserResponseEntity(userCreate)
+    return UserEntity.response(userCreate)
   }
 
   async update(id: string, dto: UserUpdateDto): Promise<UserResponseEntity> {
@@ -42,9 +45,9 @@ export class UsersService {
       updatedAt: new Date()
     })
 
-    const userCreate: UserResponseEntity = await this.repository.update(entity)
+    const userUpdate = await this.repository.update(entity)
 
-    return new UserResponseEntity(userCreate)
+    return UserEntity.response(userUpdate)
   }
 
   async updatePhoto(
@@ -61,15 +64,35 @@ export class UsersService {
       updatedAt: new Date()
     })
 
-    const userPhotoEdit: UserResponseEntity =
-      await this.repository.update(entity)
+    const userUpdate = await this.repository.update(entity)
 
-    return new UserResponseEntity(userPhotoEdit)
+    return UserEntity.response(userUpdate)
+  }
+
+  async findOne(id: string): Promise<UserResponseEntity> {
+    const userFind = await this.userOrThrow(id)
+
+    return UserEntity.response(userFind)
+  }
+
+  async findMany(
+    options: UserPaginationDto
+  ): Promise<PaginationResponseUserDto> {
+    const users = await this.repository.findMany(options)
+    const count = await this.repository.count(options)
+
+    const result = PaginationUtil.result(
+      users.map((e) => UserEntity.response(e)),
+      options,
+      count
+    )
+
+    return result
   }
 
   /// EXTRA ///
-  async userOrThrow(id: string): Promise<UserResponseEntity> {
-    const user: UserResponseEntity = await this.repository.findOne(id)
+  async userOrThrow(id: string): Promise<UserEntity> {
+    const user: UserEntity = await this.repository.findOne(id)
 
     if (!user) {
       throw new UserNotFoundError()

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { randomUUID } from 'crypto'
 import { UserNotFoundError } from '../../../../common/errors/not-found/UserNotFound.error'
-import { UserPaginationDto } from '../../dto/pagination-user.dto'
+import { UserPaginationDto } from '../../dto/request/pagination-user.dto'
 import { UserVerifyUniqueFieldDto } from '../../dto/verify-unique-field.dto'
 import { UserWhereDto } from '../../dto/where-user.dto'
 import { UserEntity } from '../../entities/user.entity'

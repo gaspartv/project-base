@@ -1,3 +1,4 @@
+import { EmailModule } from './recipes/email/email.module'
 import { BullModule } from '@nestjs/bull'
 import {
   MiddlewareConsumer,
@@ -23,6 +24,7 @@ import { RedisModule } from './recipes/redis/redis.module'
 
 @Module({
   imports: [
+    EmailModule,
     BullModule.forRoot({
       redis: {
         host: 'redis',

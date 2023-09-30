@@ -1,18 +1,18 @@
-import { UserPaginationDto } from '../dto/pagination-user.dto'
+import { UserPaginationDto } from '../dto/request/pagination-user.dto'
 import { UserVerifyUniqueFieldDto } from '../dto/verify-unique-field.dto'
 import { UserWhereDto } from '../dto/where-user.dto'
-import { UserEntity } from '../entities/user.entity'
+import { UserEntity, UserResponseEntity } from '../entities/user.entity'
 
 export abstract class UsersRepository {
-  abstract create(entity: UserEntity): Promise<UserEntity>
+  abstract create(entity: UserEntity): Promise<UserResponseEntity>
 
-  abstract update(entity: UserEntity): Promise<UserEntity>
+  abstract update(entity: UserEntity): Promise<UserResponseEntity>
 
-  abstract findOne(id: string): Promise<UserEntity>
+  abstract findOne(id: string): Promise<UserResponseEntity>
 
-  abstract findOneWhere(where: UserWhereDto): Promise<UserEntity>
+  abstract findOneWhere(where: UserWhereDto): Promise<UserResponseEntity>
 
-  abstract findMany(options: UserPaginationDto): Promise<UserEntity[]>
+  abstract findMany(options: UserPaginationDto): Promise<UserResponseEntity[]>
 
   abstract count(options: UserPaginationDto): Promise<number>
 

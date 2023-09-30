@@ -1,6 +1,6 @@
 import { ELanguage } from '@prisma/client'
 import { randomUUID } from 'crypto'
-import { UserCreateDto } from '../../../dto/create-user.dto'
+import { UserCreateDto } from '../../../dto/request/create-user.dto'
 
 export const userCreateEntityMock = {
   id: randomUUID(),

@@ -28,17 +28,9 @@ export class UserCreateDto {
   phone: string
 
   @IsString()
-  @MinLength(5)
-  password: string
-
-  @IsString()
   @IsOptional()
   @MaxLength(500)
   description?: string
-
-  @IsString()
-  @IsOptional()
-  imageUri?: string
 
   @IsBoolean()
   darkMode: boolean

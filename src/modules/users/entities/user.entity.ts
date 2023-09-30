@@ -1,5 +1,6 @@
 import { ELanguage } from '@prisma/client'
 import { randomUUID } from 'crypto'
+import { SessionEntity } from '../../sessions/entities/session.entity'
 
 export class UserEntity {
   constructor(user: UserEntity) {
@@ -19,95 +20,54 @@ export class UserEntity {
     this.language = user.language || 'PT_BR'
   }
 
-  id?: string
-  createdAt?: Date
-  updatedAt?: Date
-  disabledAt?: Date | null
-  deletedAt?: Date | null
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  passwordHash: string
-  description?: string | null
-  imageUri?: string | null
-  darkMode?: boolean
-  language?: ELanguage
-
-  static response(user: UserEntity): UserResponseEntity {
-    return {
-      id: user.id,
-      disabledAt: user.disabledAt,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      phone: user.phone,
-      description: user.description,
-      imageUri: user.imageUri,
-      darkMode: user.darkMode,
-      language: user.language
-    }
-  }
+  readonly id?: string
+  readonly createdAt?: Date
+  readonly updatedAt?: Date
+  readonly disabledAt?: Date | null
+  readonly deletedAt?: Date | null
+  readonly firstName: string
+  readonly lastName: string
+  readonly email: string
+  readonly phone: string
+  readonly passwordHash: string
+  readonly description?: string | null
+  readonly imageUri?: string | null
+  readonly darkMode?: boolean
+  readonly language?: ELanguage
 }
 
 export class UserResponseEntity {
-  id: string
-  disabledAt: Date | null
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  description: string | null
-  imageUri: string | null
-  darkMode: boolean
-  language: ELanguage
+  constructor(user: UserResponseEntity) {
+    this.id = user.id
+    this.createdAt = user.createdAt
+    this.updatedAt = user.updatedAt
+    this.disabledAt = user.disabledAt
+    this.deletedAt = user.disabledAt
+    this.firstName = user.firstName
+    this.lastName = user.lastName
+    this.email = user.email
+    this.phone = user.phone
+    this.passwordHash = user.passwordHash
+    this.description = user.description
+    this.imageUri = user.imageUri
+    this.darkMode = user.darkMode
+    this.language = user.language
+    this.Session = user.Session
+  }
+
+  readonly id: string
+  readonly createdAt: Date
+  readonly updatedAt: Date
+  readonly disabledAt: Date | null
+  readonly deletedAt: Date | null
+  readonly firstName: string
+  readonly lastName: string
+  readonly email: string
+  readonly phone: string
+  readonly passwordHash: string
+  readonly description: string | null
+  readonly imageUri: string | null
+  readonly darkMode: boolean
+  readonly language: ELanguage
+  readonly Session: SessionEntity[]
 }
-
-// export class UserResponseEntity {
-//   constructor(user: UserResponseEntity) {
-//     this.id = user.id
-//     this.createdAt = user.createdAt
-//     this.updatedAt = user.updatedAt
-//     this.disabledAt = user.disabledAt
-//     this.deletedAt = user.disabledAt
-//     this.firstName = user.firstName
-//     this.lastName = user.lastName
-//     this.email = user.email
-//     this.phone = user.phone
-//     this.passwordHash = user.passwordHash
-//     this.description = user.description
-//     this.imageUri = user.imageUri
-//     this.darkMode = user.darkMode
-//     this.language = user.language
-//   }
-
-//   id: string
-//   createdAt: Date
-//   updatedAt: Date
-//   disabledAt: Date | null
-//   deletedAt: Date | null
-//   firstName: string
-//   lastName: string
-//   email: string
-//   phone: string
-//   passwordHash: string
-//   description: string | null
-//   imageUri: string | null
-//   darkMode: boolean
-//   language: ELanguage
-
-//   static handle(user: UserResponseEntity) {
-//     return {
-//       id: user.id,
-//       disabledAt: user.disabledAt,
-//       firstName: user.firstName,
-//       lastName: user.lastName,
-//       email: user.email,
-//       phone: user.phone,
-//       description: user.description,
-//       imageUri: user.imageUri,
-//       darkMode: user.darkMode,
-//       language: user.language
-//     }
-//   }
-// }

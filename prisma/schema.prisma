@@ -15,7 +15,7 @@ enum ELanguage {
 }
 
 model User {
-  id String @id @db.Uuid
+  id String @id @default(uuid()) @map("id") @db.Uuid
 
   createdAt  DateTime
   updatedAt  DateTime
@@ -38,7 +38,7 @@ model User {
 }
 
 model Session {
-  id String @id @db.Uuid
+  id String @id @default(uuid()) @map("id") @db.Uuid
 
   connectedAt    DateTime
   disconnectedAt DateTime?

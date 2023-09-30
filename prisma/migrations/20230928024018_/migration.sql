@@ -2,9 +2,9 @@
 CREATE TYPE "languages" AS ENUM ('EN_US', 'PT_BR');
 
 -- CreateTable
-CREATE TABLE "User" (
+CREATE TABLE "users" (
     "id" UUID NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "disabledAt" TIMESTAMP(3),
     "deletedAt" TIMESTAMP(3),
@@ -15,26 +15,29 @@ CREATE TABLE "User" (
     "passwordHash" TEXT NOT NULL,
     "description" TEXT,
     "imageUri" TEXT,
-    "darkMode" BOOLEAN NOT NULL DEFAULT false,
-    "language" "languages" NOT NULL DEFAULT 'PT_BR',
+    "darkMode" BOOLEAN NOT NULL,
+    "language" "languages" NOT NULL,
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Session" (
+CREATE TABLE "sessions" (
     "id" UUID NOT NULL,
-    "connectedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "connectedAt" TIMESTAMP(3) NOT NULL,
     "disconnectedAt" TIMESTAMP(3),
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "tokens" TEXT[],
     "userId" UUID NOT NULL,
 
-    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "sessions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_phone_key" ON "users"("phone");
 
 -- AddForeignKey
-ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "sessions" ADD CONSTRAINT "sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

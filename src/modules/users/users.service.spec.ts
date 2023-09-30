@@ -31,8 +31,6 @@ describe('UsersService', () => {
       description: faker.person.bio(),
       phone: faker.phone.number('###########'),
       email: faker.internet.email(),
-      password: faker.internet.password(),
-      imageUri: null,
       darkMode: true,
       language: 'PT_BR'
     }
@@ -74,8 +72,6 @@ describe('UsersService', () => {
       description: faker.person.bio(),
       phone: faker.phone.number('###########'),
       email: faker.internet.email(),
-      password: faker.internet.password(),
-      imageUri: null,
       darkMode: true,
       language: 'PT_BR'
     }

@@ -10,7 +10,7 @@ import {
 } from '../../modules/sessions/entities/session.entity'
 import { SessionsRepository } from '../../modules/sessions/repositories/sessions.repository'
 import { UserEntity } from '../../modules/users/entities/user.entity'
-import { UsersRepository } from '../../modules/users/repositories/users.repository'
+import { UsersService } from '../../modules/users/users.service'
 import { InvalidTokenUnauthorizedError } from '../errors/unauthorized/InvalidTokenUnauthorized.error'
 import { expiresAtGenerator } from '../utils/expires-generator.util'
 
@@ -18,7 +18,7 @@ import { expiresAtGenerator } from '../utils/expires-generator.util'
 export class RefreshTokenMiddleware implements NestMiddleware {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly usersRepository: UsersRepository,
+    private readonly usersService: UsersService,
     private readonly sessionsRepository: SessionsRepository
   ) {}
 
@@ -46,7 +46,7 @@ export class RefreshTokenMiddleware implements NestMiddleware {
         throw new InvalidTokenUnauthorizedError()
       }
 
-      const user: UserEntity = await this.usersRepository.findOneWhere({
+      const user: UserEntity = await this.usersService.findOneWhere({
         id: decoded.sign.sub,
         deletedAt: null,
         disabledAt: null

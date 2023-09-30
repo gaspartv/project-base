@@ -5,7 +5,7 @@ import { PrismaService } from '../../../../recipes/prisma/prisma.service'
 import { UserPaginationDto } from '../../dto/request/pagination-user.dto'
 import { UserVerifyUniqueFieldDto } from '../../dto/verify-unique-field.dto'
 import { UserWhereDto } from '../../dto/where-user.dto'
-import { UserEntity } from '../../entities/user.entity'
+import { UserEntity, UserResponseEntity } from '../../entities/user.entity'
 import { UsersRepository } from '../users.repository'
 
 @Injectable()
@@ -13,18 +13,17 @@ export class UsersPrismaRepository implements UsersRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   private include: Prisma.UserInclude = {
-    Sessions: true
+    Sessions: { where: { disconnectedAt: null } }
   }
 
-  async create(entity: UserEntity): Promise<UserEntity> {
-    // return await this.prisma.user.create({
-    //   data: entity,
-    //   include: this.include
-    // })
-    return
+  async create(entity: UserEntity): Promise<UserResponseEntity> {
+    return await this.prisma.user.create({
+      data: entity,
+      include: this.include
+    })
   }
 
-  async update(entity: UserEntity): Promise<UserEntity> {
+  async update(entity: UserEntity): Promise<UserResponseEntity> {
     return await this.prisma.user.update({
       where: { id: entity.id },
       data: entity,
@@ -32,7 +31,7 @@ export class UsersPrismaRepository implements UsersRepository {
     })
   }
 
-  async findOne(id: string): Promise<UserEntity> {
+  async findOne(id: string): Promise<UserResponseEntity> {
     return await this.prisma.user.findUnique({
       where: { id, deletedAt: null, disabledAt: null },
       include: this.include
@@ -63,14 +62,14 @@ export class UsersPrismaRepository implements UsersRepository {
     })
   }
 
-  async findOneWhere(where: UserWhereDto): Promise<UserEntity> {
+  async findOneWhere(where: UserWhereDto): Promise<UserResponseEntity> {
     return await this.prisma.user.findFirst({
       where,
       include: this.include
     })
   }
 
-  async findMany(options: UserPaginationDto): Promise<UserEntity[]> {
+  async findMany(options: UserPaginationDto): Promise<UserResponseEntity[]> {
     return await this.prisma.user.findMany({
       where: {
         disabledAt:

@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common'
+import { EUserPolice } from '@prisma/client'
 import { randomUUID } from 'crypto'
 import { UserNotFoundError } from '../../../../common/errors/not-found/UserNotFound.error'
 import { UserPaginationDto } from '../../dto/request/pagination-user.dto'
 import { UserVerifyUniqueFieldDto } from '../../dto/verify-unique-field.dto'
 import { UserWhereDto } from '../../dto/where-user.dto'
-import { UserEntity } from '../../entities/user.entity'
+import { UserEntity, UserResponseEntity } from '../../entities/user.entity'
 import { UsersRepository } from '../users.repository'
 
 @Injectable()
 export class UsersFakeRepository implements UsersRepository {
-  users: UserEntity[] = []
+  users: UserResponseEntity[] = []
 
-  async create(entity: UserEntity): Promise<UserEntity> {
-    return new UserEntity({
+  async create(entity: UserEntity): Promise<UserResponseEntity> {
+    return new UserResponseEntity({
       id: randomUUID(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -27,24 +28,28 @@ export class UsersFakeRepository implements UsersRepository {
       lastName: null,
       passwordHash: '',
       phone: '',
+      police: EUserPolice.NORMAL,
+      Sessions: [],
       ...entity
     })
   }
 
-  async update(entity: UserEntity): Promise<UserEntity> {
+  async update(entity: UserEntity): Promise<UserResponseEntity> {
     const userIndex = this.users.findIndex((el) => el.id === entity.id)
 
     const userEdit = {
       ...this.users[userIndex],
-      ...entity
+      ...entity,
+      police: EUserPolice.NORMAL,
+      Sessions: []
     }
 
     this.users[userIndex] = userEdit
 
-    return new UserEntity(userEdit)
+    return new UserResponseEntity(userEdit)
   }
 
-  async findOne(id: string): Promise<UserEntity> {
+  async findOne(id: string): Promise<UserResponseEntity> {
     const user = this.users.find((el) => el.id === id)
 
     if (!user) {
@@ -73,7 +78,7 @@ export class UsersFakeRepository implements UsersRepository {
     )
   }
 
-  async findOneWhere(where: UserWhereDto): Promise<UserEntity> {
+  async findOneWhere(where: UserWhereDto): Promise<UserResponseEntity> {
     const user = this.users.find((user) => {
       return Object.entries(where).every(([key, value]) => {
         return user[key] === value
@@ -87,7 +92,7 @@ export class UsersFakeRepository implements UsersRepository {
     return user
   }
 
-  async findMany(options: UserPaginationDto): Promise<UserEntity[]> {
+  async findMany(options: UserPaginationDto): Promise<UserResponseEntity[]> {
     const { orderBy, skip, sort, take, where } = options
 
     const {

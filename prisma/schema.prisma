@@ -14,23 +14,30 @@ enum ELanguage {
   @@map("languages")
 }
 
+enum EUserPolice {
+  NORMAL
+  ADMIN
+  SUPER
+
+  @@map("user_polices")
+}
+
 model User {
-  id String @id @default(uuid()) @map("id") @db.Uuid
-
-  createdAt  DateTime
-  updatedAt  DateTime
-  disabledAt DateTime?
-  deletedAt  DateTime?
-
+  id           String      @id @default(uuid()) @db.Uuid
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  disabledAt   DateTime?
+  deletedAt    DateTime?
   firstName    String
   lastName     String
-  email        String    @unique
-  phone        String    @unique
+  email        String      @unique
+  phone        String      @unique
   passwordHash String
   description  String?
   imageUri     String?
-  darkMode     Boolean
-  language     ELanguage
+  darkMode     Boolean     @default(false)
+  language     ELanguage   @default(PT_BR)
+  police       EUserPolice @default(NORMAL)
 
   Sessions Session[]
 
@@ -38,9 +45,8 @@ model User {
 }
 
 model Session {
-  id String @id @default(uuid()) @map("id") @db.Uuid
-
-  connectedAt    DateTime
+  id             String    @id @default(uuid()) @db.Uuid
+  connectedAt    DateTime  @default(now())
   disconnectedAt DateTime?
   expiresAt      DateTime
   tokens         String[]

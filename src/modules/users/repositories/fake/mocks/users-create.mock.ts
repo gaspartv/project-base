@@ -26,10 +26,8 @@ export const userCreateMock: UserCreateDto = {
   lastName: 'test',
   language: ELanguage.PT_BR,
   darkMode: false,
-  password: '123',
   phone: '5532998274714',
-  description: 'Tibia-Info',
-  imageUri: null
+  description: 'Tibia-Info'
 }
 
 export const userCreateToUpdateMock: UserCreateDto = {
@@ -38,8 +36,6 @@ export const userCreateToUpdateMock: UserCreateDto = {
   lastName: 'test_update',
   language: ELanguage.PT_BR,
   darkMode: false,
-  password: '123',
   phone: '5532998274714',
-  description: 'Tibia-Info',
-  imageUri: null
+  description: 'Tibia-Info'
 }

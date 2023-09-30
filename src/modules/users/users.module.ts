@@ -6,15 +6,18 @@ import { UsersRedisRepository } from './repositories/redis/users.redis.repositor
 import { UsersRepository } from './repositories/users.repository'
 import { UsersController } from './users.controller'
 import { UsersService } from './users.service'
+import { UsersUseCase } from './users.use-case'
+import { CryptModule } from '../../recipes/crypt/crypt.module'
 
 @Module({
-  imports: [PrismaModule, RedisModule],
+  imports: [PrismaModule, RedisModule, CryptModule],
   controllers: [UsersController],
   providers: [
     UsersService,
+    UsersUseCase,
     UsersPrismaRepository,
     { provide: UsersRepository, useClass: UsersRedisRepository }
   ],
-  exports: [UsersService, UsersRepository]
+  exports: [UsersService]
 })
 export class UsersModule {}

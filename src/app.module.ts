@@ -1,4 +1,3 @@
-import { EmailModule } from './recipes/email/email.module'
 import { BullModule } from '@nestjs/bull'
 import {
   MiddlewareConsumer,
@@ -17,6 +16,8 @@ import { RefreshTokenMiddleware } from './common/middlewares/refresh-token.middl
 import { AuthModule } from './modules/auth/auth.module'
 import { SessionsModule } from './modules/sessions/sessions.module'
 import { UsersModule } from './modules/users/users.module'
+import { CryptModule } from './recipes/crypt/crypt.module'
+import { EmailModule } from './recipes/email/email.module'
 import { JwtGuard } from './recipes/passport-auth/guards/jwt.guard'
 import { JwtStrategy } from './recipes/passport-auth/strategies/jwt.strategy'
 import { PrismaModule } from './recipes/prisma/prisma.module'
@@ -24,6 +25,7 @@ import { RedisModule } from './recipes/redis/redis.module'
 
 @Module({
   imports: [
+    CryptModule,
     EmailModule,
     BullModule.forRoot({
       redis: {

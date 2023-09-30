@@ -33,8 +33,8 @@ export class UserCreateDto {
   description?: string
 
   @IsBoolean()
-  darkMode: boolean
+  darkMode?: boolean
 
   @IsEnum(ELanguage)
-  language: ELanguage
+  language?: ELanguage
 }

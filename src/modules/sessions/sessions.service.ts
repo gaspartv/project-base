@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { expiresAtGenerator } from '../../common/utils/expires-generator.util'
-import { UsersRepository } from '../users/repositories/users.repository'
+import { UsersService } from '../users/users.service'
 import { SessionCreateDto } from './dto/create-session.dto'
 import { SessionEntity, SessionResponseEntity } from './entities/session.entity'
 import { SessionsRepository } from './repositories/sessions.repository'
@@ -9,11 +9,11 @@ import { SessionsRepository } from './repositories/sessions.repository'
 export class SessionsService {
   constructor(
     private readonly repository: SessionsRepository,
-    private readonly usersRepository: UsersRepository
+    private readonly usersService: UsersService
   ) {}
 
   async create(dto: SessionCreateDto): Promise<SessionResponseEntity> {
-    await this.usersRepository.findOne(dto.userId)
+    await this.usersService.userOrThrow(dto.userId)
 
     const expiresAt: Date = expiresAtGenerator()
 
@@ -27,7 +27,7 @@ export class SessionsService {
   }
 
   async disconnectedMany(userId: string): Promise<{ count: number }> {
-    await this.usersRepository.findOne(userId)
+    await this.usersService.userOrThrow(userId)
 
     return await this.repository.disconnectedMany(userId)
   }

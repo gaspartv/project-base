@@ -1,4 +1,4 @@
-import { ELanguage } from '@prisma/client'
+import { ELanguage, EUserPolice } from '@prisma/client'
 import { SessionEntity } from '../../../sessions/entities/session.entity'
 import { UserResponseEntity } from '../../entities/user.entity'
 
@@ -15,6 +15,7 @@ export class UserResponseDto {
     this.description = user.description
     this.imageUrl = user.imageUrl
     this.settings = user.settings
+    this.police = user.police
     this.Session = user.Session
   }
 
@@ -28,6 +29,7 @@ export class UserResponseDto {
   readonly phone: string
   readonly description: string | null
   readonly imageUrl: string | null
+  readonly police: EUserPolice
   readonly settings: UserSettingsResponseDto
   readonly Session: SessionEntity
 
@@ -43,11 +45,14 @@ export class UserResponseDto {
       phone: entity.phone,
       description: entity.description,
       imageUrl: entity.imageUri,
+      police: entity.police,
       settings: {
         language: entity.language,
         darkMode: entity.darkMode
       },
-      Session: entity.Session[0]
+      Session: entity.Sessions.find((session, index) =>
+        index === 0 ? session : null
+      )
     }
   }
 }

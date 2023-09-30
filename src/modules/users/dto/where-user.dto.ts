@@ -1,4 +1,4 @@
-import { ELanguage } from '@prisma/client'
+import { ELanguage, EUserPolice } from '@prisma/client'
 
 export class UserWhereDto {
   id?: string
@@ -11,4 +11,5 @@ export class UserWhereDto {
   imageUri?: string
   darkMode?: boolean
   language?: ELanguage
+  police?: EUserPolice
 }

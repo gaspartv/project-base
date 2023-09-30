@@ -3,16 +3,13 @@ import { JwtService } from '@nestjs/jwt'
 import { compare } from 'bcryptjs'
 import { LoginUnauthorizedError } from '../../common/errors/unauthorized/LoginUnauthorized.error'
 import { expiresAtGenerator } from '../../common/utils/expires-generator.util'
-import {
-  UserEntity,
-  UserResponseEntity
-} from '../../modules/users/entities/user.entity'
+import { UserEntity } from '../../modules/users/entities/user.entity'
 import {
   SessionEntity,
   SessionResponseEntity
 } from '../sessions/entities/session.entity'
 import { SessionsRepository } from '../sessions/repositories/sessions.repository'
-import { UsersRepository } from '../users/repositories/users.repository'
+import { UsersService } from '../users/users.service'
 import { TokenResponseDto } from './dto/auth-response.dto'
 import { MessageDto } from './dto/message.dto'
 import { IPayload } from './interfaces/payload.interface'
@@ -22,7 +19,7 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly sessionsRepository: SessionsRepository,
-    private readonly usersRepository: UsersRepository
+    private readonly usersService: UsersService
   ) {}
 
   async login(user: UserEntity): Promise<TokenResponseDto> {
@@ -58,7 +55,7 @@ export class AuthService {
   }
 
   async validateUser(email: string, password: string): Promise<UserEntity> {
-    const user: UserEntity = await this.usersRepository.findOneWhere({
+    const user: UserEntity = await this.usersService.findOneWhere({
       email: email,
       deletedAt: null,
       disabledAt: null

@@ -1,4 +1,4 @@
-import { ELanguage } from '@prisma/client'
+import { ELanguage, EUserPolice } from '@prisma/client'
 import { randomUUID } from 'crypto'
 import { SessionEntity } from '../../sessions/entities/session.entity'
 
@@ -18,6 +18,7 @@ export class UserEntity {
     this.imageUri = user.imageUri || null
     this.darkMode = user.darkMode || false
     this.language = user.language || 'PT_BR'
+    this.police = user.police || 'NORMAL'
   }
 
   readonly id?: string
@@ -34,6 +35,7 @@ export class UserEntity {
   readonly imageUri?: string | null
   readonly darkMode?: boolean
   readonly language?: ELanguage
+  readonly police?: EUserPolice
 }
 
 export class UserResponseEntity {
@@ -52,7 +54,8 @@ export class UserResponseEntity {
     this.imageUri = user.imageUri
     this.darkMode = user.darkMode
     this.language = user.language
-    this.Session = user.Session
+    this.police = user.police
+    this.Sessions = user.Sessions
   }
 
   readonly id: string
@@ -69,5 +72,6 @@ export class UserResponseEntity {
   readonly imageUri: string | null
   readonly darkMode: boolean
   readonly language: ELanguage
-  readonly Session: SessionEntity[]
+  readonly police: EUserPolice
+  readonly Sessions: SessionEntity[]
 }

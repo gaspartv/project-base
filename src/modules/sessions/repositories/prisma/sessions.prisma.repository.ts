@@ -6,6 +6,7 @@ import {
   SessionResponseEntity
 } from '../../entities/session.entity'
 import { SessionsRepository } from '../sessions.repository'
+import { ApiTooManyRequestsResponse } from '@nestjs/swagger'
 
 @Injectable()
 export class SessionsPrismaRepository implements SessionsRepository {
@@ -16,10 +17,11 @@ export class SessionsPrismaRepository implements SessionsRepository {
   }
 
   async create(entity: SessionEntity): Promise<SessionResponseEntity> {
-    return await this.prisma.session.create({
-      data: entity,
-      include: this.include
-    })
+    // return await this.prisma.session.create({
+    //   data: entity,
+    //   include: this.include
+    // })
+    return
   }
 
   async update(

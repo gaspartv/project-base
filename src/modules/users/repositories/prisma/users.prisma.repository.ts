@@ -17,10 +17,11 @@ export class UsersPrismaRepository implements UsersRepository {
   }
 
   async create(entity: UserEntity): Promise<UserEntity> {
-    return await this.prisma.user.create({
-      data: entity,
-      include: this.include
-    })
+    // return await this.prisma.user.create({
+    //   data: entity,
+    //   include: this.include
+    // })
+    return
   }
 
   async update(entity: UserEntity): Promise<UserEntity> {

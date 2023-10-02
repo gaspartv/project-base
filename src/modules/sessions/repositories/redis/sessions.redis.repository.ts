@@ -78,6 +78,30 @@ export class SessionsRedisRepository implements SessionsRepository {
   }
 
   async disconnectedMany(userId: string): Promise<{ count: number }> {
+    const keys: string[] = await this.redis.keys(this.prefixEntity + '*')
+
+    const keyValues: string[] = []
+
+    for (const key of keys) {
+      const valorChave: string = await this.redis.get(key)
+
+      let valueObj: SessionResponseEntity
+
+      try {
+        valueObj = JSON.parse(valorChave)
+      } catch (error) {
+        continue
+      }
+
+      if (valueObj && valueObj.userId === userId) {
+        keyValues.push(key)
+      }
+    }
+
+    if (keyValues.length > 0) {
+      await this.redis.del(keyValues)
+    }
+
     await this.redis.clean(this.prefixEntities)
 
     return await this.prisma.disconnectedMany(userId)

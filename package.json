@@ -84,6 +84,7 @@
     "typescript": "^5.2.2"
   },
   "devDependencies": {
+    "@types/nodemailer": "^6.4.11",
     "prisma": "^5.3.1"
   },
   "jest": {

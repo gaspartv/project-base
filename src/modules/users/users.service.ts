@@ -3,11 +3,16 @@ import { randomUUID } from 'crypto'
 import { UserNotFoundError } from '../../common/errors/not-found/UserNotFound.error'
 import { uriGenerator } from '../../common/utils/uri-generator.util'
 import { CryptService } from '../../recipes/crypt/crypt.service'
+import { ResponsePassTokenEntity } from '../pass-tokens/entity/pass-token.entity'
+import { PassTokensService } from '../pass-tokens/pass-tokens.service'
 import { UserCreateDto } from './dto/request/create-user.dto'
 import { UserPaginationDto } from './dto/request/pagination-user.dto'
-import { MessageFileDto } from './dto/request/update-photo-user.dto'
-import { UserUpdatePoliceDto } from './dto/request/update-police-user.dto'
-import { UserUpdateDto } from './dto/update-user.dto'
+import { UserUpdateEmailDto } from './dto/request/update-user-email.dto'
+import { MessageFileDto } from './dto/request/update-user-photo.dto'
+import { UserUpdatePoliceDto } from './dto/request/update-user-police.dto'
+import { UserUpdatePassResetDto } from './dto/request/update-user-reset-pass.dto'
+import { UserUpdateSettingsDto } from './dto/request/update-user-settings.dto'
+import { UserUpdateDto } from './dto/request/update-user.dto'
 import { UserVerifyUniqueFieldDto } from './dto/verify-unique-field.dto'
 import { UserWhereDto } from './dto/where-user.dto'
 import { UserEntity, UserResponseEntity } from './entities/user.entity'
@@ -17,7 +22,8 @@ import { UsersRepository } from './repositories/users.repository'
 export class UsersService {
   constructor(
     private readonly repository: UsersRepository,
-    private readonly cryptService: CryptService
+    private readonly cryptService: CryptService,
+    private readonly passTokensService: PassTokensService
   ) {}
 
   async create(dto: UserCreateDto): Promise<UserResponseEntity> {
@@ -27,7 +33,7 @@ export class UsersService {
 
     const password: string = randomUUID().toString()
 
-    const passwordHash = await this.cryptService.hashBcrypt(password)
+    const passwordHash = this.cryptService.passwordHash(password)
 
     const entity: UserEntity = new UserEntity({
       ...dto,
@@ -35,16 +41,6 @@ export class UsersService {
     })
 
     return await this.repository.create(entity)
-  }
-
-  async findOneWhere(where: UserWhereDto): Promise<UserResponseEntity> {
-    const user = await this.repository.findOneWhere(where)
-
-    if (!user) {
-      throw new UserNotFoundError()
-    }
-
-    return new UserResponseEntity(user)
   }
 
   async findMany(options: UserPaginationDto): Promise<UserResponseEntity[]> {
@@ -56,7 +52,7 @@ export class UsersService {
   }
 
   async enable(id: string): Promise<UserResponseEntity> {
-    const userFound: UserResponseEntity = await this.userOrThrow(id)
+    const userFound: UserResponseEntity = await this.findOneWhere({ id })
 
     const entity = new UserEntity({
       ...userFound,
@@ -89,9 +85,9 @@ export class UsersService {
   }
 
   async update(id: string, dto: UserUpdateDto): Promise<UserResponseEntity> {
-    await this.verifyUniqueFieldToUpdate(id, dto.email, dto.phone)
-
     const userFound: UserResponseEntity = await this.userOrThrow(id)
+
+    await this.verifyUniqueFieldToUpdate(id, userFound.email, dto.phone)
 
     const entity: UserEntity = new UserEntity({
       ...userFound,
@@ -134,7 +130,90 @@ export class UsersService {
     return await this.repository.update(entity)
   }
 
+  async updateEmail(
+    dto: UserUpdateEmailDto,
+    id: string
+  ): Promise<UserResponseEntity> {
+    const userFound: UserResponseEntity = await this.userOrThrow(id)
+
+    await this.verifyUniqueFieldToUpdate(id, dto.email, userFound.phone)
+
+    const entity: UserEntity = new UserEntity({
+      ...userFound,
+      ...dto,
+      updatedAt: new Date()
+    })
+
+    return await this.repository.update(entity)
+  }
+
+  async updateSettings(
+    dto: UserUpdateSettingsDto,
+    id: string
+  ): Promise<UserResponseEntity> {
+    const userFound: UserResponseEntity = await this.userOrThrow(id)
+
+    const entity: UserEntity = new UserEntity({
+      ...userFound,
+      ...dto,
+      updatedAt: new Date()
+    })
+
+    return await this.repository.update(entity)
+  }
+
+  async resetPass(
+    passTokenId: string,
+    dto: UserUpdatePassResetDto
+  ): Promise<ResponsePassTokenEntity> {
+    const { confirmNewPassword, newPassword } = dto
+
+    if (newPassword !== confirmNewPassword) {
+      throw new ConflictException('New Passwords do not match')
+    }
+
+    const token: ResponsePassTokenEntity =
+      await this.passTokensService.passTokenValidate(passTokenId)
+
+    const userId: string = token.userId
+
+    const userFound: UserResponseEntity = await this.userOrThrow(userId)
+
+    this.cryptService.passwordIsMatch(newPassword, userFound.passwordHash)
+
+    const passwordHash: string = this.cryptService.passwordHash(newPassword)
+
+    const entity = new UserEntity({
+      ...userFound,
+      passwordHash: passwordHash
+    })
+
+    await this.repository.update(entity)
+
+    return await this.passTokensService.revoke(token.id)
+  }
+
+  async recoveryPass(email: string) {
+    const user = await this.findOneWhere({ email })
+
+    const passToken = await this.passTokensService.create(user.id)
+
+    await this.passTokensService.recoveryPass(email, passToken.id)
+
+    return
+  }
+
   /// EXTRA ///
+
+  async findOneWhere(where: UserWhereDto): Promise<UserResponseEntity> {
+    const user = await this.repository.findOneWhere(where)
+
+    if (!user) {
+      throw new UserNotFoundError()
+    }
+
+    return new UserResponseEntity(user)
+  }
 
   async userOrThrow(id: string): Promise<UserResponseEntity> {
     const user = await this.repository.findOne(id)

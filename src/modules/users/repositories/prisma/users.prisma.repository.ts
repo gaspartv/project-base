@@ -33,7 +33,7 @@ export class UsersPrismaRepository implements UsersRepository {
 
   async findOne(id: string): Promise<UserResponseEntity> {
     return await this.prisma.user.findUnique({
-      where: { id, deletedAt: null, disabledAt: null },
+      where: { id, deletedAt: null },
       include: this.include
     })
   }
@@ -83,10 +83,11 @@ export class UsersPrismaRepository implements UsersRepository {
             ? { not: null }
             : options.deletedAt === BooleanQuery.FALSE
             ? null
-            : undefined
+            : undefined,
+        police: options.police ? options.police : undefined
       },
-      skip: Number(options.skip),
-      take: Number(options.take),
+      skip: options.skip ? Number(options.skip) : undefined,
+      take: options.take ? Number(options.take) : undefined,
       orderBy:
         options.orderBy === 'email'
           ? { email: options.sort === 'asc' ? 'asc' : 'desc' }
@@ -113,7 +114,8 @@ export class UsersPrismaRepository implements UsersRepository {
             ? { not: null }
             : options.deletedAt === BooleanQuery.FALSE
             ? null
-            : undefined
+            : undefined,
+        police: options.police ? options.police : undefined
       }
     })
   }

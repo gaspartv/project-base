@@ -39,7 +39,8 @@ model User {
   language     ELanguage   @default(PT_BR)
   police       EUserPolice @default(NORMAL)
 
-  Sessions Session[]
+  Sessions  Session[]
+  PassToken PassToken[]
 
   @@map("users")
 }
@@ -55,4 +56,19 @@ model Session {
   userId String @db.Uuid
 
   @@map("sessions")
+}
+
+model PassToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  expiresAt DateTime
+  revokedAt DateTime?
+  usedAt    DateTime?
+
+  User   User   @relation(fields: [userId], references: [id])
+  userId String @db.Uuid
+
+  @@map("pass_tokens")
 }

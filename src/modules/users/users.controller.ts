@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Query
@@ -16,11 +17,15 @@ import { MessageDto } from '../auth/dto/message.dto'
 import { ISign } from '../auth/interfaces/payload.interface'
 import { UserCreateDto } from './dto/request/create-user.dto'
 import { UserPaginationDto } from './dto/request/pagination-user.dto'
-import { MessageCreateFileDto } from './dto/request/update-photo-user.dto'
-import { UserUpdatePoliceDto } from './dto/request/update-police-user.dto'
+import { UserUpdateEmailDto } from './dto/request/update-user-email.dto'
+import { MessageCreateFileDto } from './dto/request/update-user-photo.dto'
+import { UserUpdatePoliceDto } from './dto/request/update-user-police.dto'
+import { UserUpdatePassRecoveryDto } from './dto/request/update-user-recovery-pass.dto'
+import { UserUpdatePassResetDto } from './dto/request/update-user-reset-pass.dto'
+import { UserUpdateSettingsDto } from './dto/request/update-user-settings.dto'
+import { UserUpdateDto } from './dto/request/update-user.dto'
 import { UserPaginationResponseDto } from './dto/response/response-pagination-user.dto'
 import { UserResponseDto } from './dto/response/response-user.dto'
-import { UserUpdateDto } from './dto/update-user.dto'
 import { UsersUseCase } from './users.use-case'
 
 @ApiTags('User')
@@ -82,6 +87,24 @@ export class UsersController {
     return this.useCase.updatePolice(dto, id)
   }
 
+  @Patch(':id/email')
+  @HttpCode(200)
+  updateEmail(
+    @Body() dto: UserUpdateEmailDto,
+    @Param('id', ParseUuidPipe) id: string
+  ): Promise<UserResponseDto> {
+    return this.useCase.updateEmail(dto, id)
+  }
+
+  @Patch(':id/settings')
+  @HttpCode(200)
+  updateSettings(
+    @Body() dto: UserUpdateSettingsDto,
+    @Param('id', ParseUuidPipe) id: string
+  ) {
+    return this.useCase.updateSettings(dto, id)
+  }
+
   @Patch(':id/disable')
   @HttpCode(200)
   disable(@Param('id', ParseUuidPipe) id: string): Promise<UserResponseDto> {
@@ -98,5 +121,22 @@ export class UsersController {
   @HttpCode(204)
   delete(@Param('id', ParseUuidPipe) id: string): Promise<MessageDto> {
     return this.useCase.delete(id)
+  }
+
+  @IsPublic()
+  @Patch('password/reset/:passTokenId')
+  @HttpCode(200)
+  resetPass(
+    @Param('passTokenId', ParseUUIDPipe) passTokenId: string,
+    @Body() dto: UserUpdatePassResetDto
+  ): Promise<MessageDto> {
+    return this.useCase.resetPass(passTokenId, dto)
+  }
+
+  @IsPublic()
+  @Patch('password/recovery')
+  @HttpCode(204)
+  recoveryPass(@Body() { email }: UserUpdatePassRecoveryDto) {
+    return this.useCase.recoveryPass(email)
   }
 }

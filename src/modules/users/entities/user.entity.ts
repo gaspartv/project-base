@@ -8,7 +8,7 @@ export class UserEntity {
     this.createdAt = user.createdAt || new Date()
     this.updatedAt = user.updatedAt || new Date()
     this.disabledAt = user.disabledAt || null
-    this.deletedAt = user.disabledAt || null
+    this.deletedAt = user.deletedAt || null
     this.firstName = user.firstName
     this.lastName = user.lastName
     this.email = user.email
@@ -44,7 +44,7 @@ export class UserResponseEntity {
     this.createdAt = user.createdAt
     this.updatedAt = user.updatedAt
     this.disabledAt = user.disabledAt
-    this.deletedAt = user.disabledAt
+    this.deletedAt = user.deletedAt
     this.firstName = user.firstName
     this.lastName = user.lastName
     this.email = user.email

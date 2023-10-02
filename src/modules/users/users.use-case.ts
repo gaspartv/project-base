@@ -3,11 +3,14 @@ import { PaginationUtil } from '../../common/pagination/pagination.util'
 import { MessageDto } from '../auth/dto/message.dto'
 import { UserCreateDto } from './dto/request/create-user.dto'
 import { UserPaginationDto } from './dto/request/pagination-user.dto'
-import { MessageFileDto } from './dto/request/update-photo-user.dto'
-import { UserUpdatePoliceDto } from './dto/request/update-police-user.dto'
+import { UserUpdateEmailDto } from './dto/request/update-user-email.dto'
+import { MessageFileDto } from './dto/request/update-user-photo.dto'
+import { UserUpdatePoliceDto } from './dto/request/update-user-police.dto'
+import { UserUpdatePassResetDto } from './dto/request/update-user-reset-pass.dto'
+import { UserUpdateSettingsDto } from './dto/request/update-user-settings.dto'
+import { UserUpdateDto } from './dto/request/update-user.dto'
 import { UserPaginationResponseDto } from './dto/response/response-pagination-user.dto'
 import { UserResponseDto } from './dto/response/response-user.dto'
-import { UserUpdateDto } from './dto/update-user.dto'
 import { UserResponseEntity } from './entities/user.entity'
 import { UsersService } from './users.service'
 
@@ -42,6 +45,24 @@ export class UsersUseCase {
     return UserResponseDto.handle(userUpdate)
   }
 
+  async updateEmail(
+    dto: UserUpdateEmailDto,
+    id: string
+  ): Promise<UserResponseDto> {
+    const userUpdate = await this.usersService.updateEmail(dto, id)
+
+    return UserResponseDto.handle(userUpdate)
+  }
+
+  async updateSettings(
+    dto: UserUpdateSettingsDto,
+    id: string
+  ): Promise<UserResponseDto> {
+    const userUpdate = await this.usersService.updateSettings(dto, id)
+
+    return UserResponseDto.handle(userUpdate)
+  }
+
   async findOne(id: string): Promise<UserResponseDto> {
     const userFind: UserResponseEntity = await this.usersService.userOrThrow(id)
 
@@ -56,10 +77,29 @@ export class UsersUseCase {
     const count = await this.usersService.count(options)
 
     return PaginationUtil.result(
-      users.map((user) => UserResponseDto.handle(user)),
+      users.map((user) => ({
+        ...UserResponseDto.handle(user),
+        settings: undefined,
+        Session: undefined
+      })),
       options,
       count
     )
+  }
+
+  async resetPass(
+    passTokenId: string,
+    dto: UserUpdatePassResetDto
+  ): Promise<MessageDto> {
+    await this.usersService.resetPass(passTokenId, dto)
+
+    return { message: 'password updated successfully' }
+  }
+
+  async recoveryPass(email: string) {
+    await this.usersService.recoveryPass(email)
+
+    return { message: 'password recovery successfully' }
   }
 
   async enable(id: string): Promise<UserResponseDto> {

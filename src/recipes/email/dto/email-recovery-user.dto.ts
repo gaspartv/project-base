@@ -1,4 +1,4 @@
 export class EmailRecoveryUserDto {
-  frontEndUrl: string
-  passwordToken: string
+  urlFront: string
+  passToken: string
 }

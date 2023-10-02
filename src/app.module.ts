@@ -14,6 +14,8 @@ import { join } from 'path'
 import { CheckPasswordGuard } from './common/guards/check-password.guard'
 import { RefreshTokenMiddleware } from './common/middlewares/refresh-token.middleware'
 import { AuthModule } from './modules/auth/auth.module'
+import { PassTokensModule } from './modules/pass-tokens/pass-tokens.module'
+import { PassTokensService } from './modules/pass-tokens/pass-tokens.service'
 import { SessionsModule } from './modules/sessions/sessions.module'
 import { UsersModule } from './modules/users/users.module'
 import { CryptModule } from './recipes/crypt/crypt.module'
@@ -25,8 +27,6 @@ import { RedisModule } from './recipes/redis/redis.module'
 
 @Module({
   imports: [
-    CryptModule,
-    EmailModule,
     BullModule.forRoot({
       redis: {
         host: 'redis',
@@ -45,9 +45,13 @@ import { RedisModule } from './recipes/redis/redis.module'
     RedisModule,
     AuthModule,
     UsersModule,
-    SessionsModule
+    SessionsModule,
+    PassTokensModule,
+    CryptModule,
+    EmailModule
   ],
   providers: [
+    PassTokensService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtGuard },
     { provide: APP_GUARD, useClass: CheckPasswordGuard },

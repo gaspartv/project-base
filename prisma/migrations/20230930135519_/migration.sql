@@ -37,6 +37,19 @@ CREATE TABLE "sessions" (
     CONSTRAINT "sessions_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "pass_tokens" (
+    "id" UUID NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "revokedAt" TIMESTAMP(3),
+    "usedAt" TIMESTAMP(3),
+    "userId" UUID NOT NULL,
+
+    CONSTRAINT "pass_tokens_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -45,3 +58,6 @@ CREATE UNIQUE INDEX "users_phone_key" ON "users"("phone");
 
 -- AddForeignKey
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "pass_tokens" ADD CONSTRAINT "pass_tokens_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

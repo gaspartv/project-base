@@ -66,8 +66,6 @@ describe('UsersController', () => {
   //     passwordHash
   //   })
 
-  //   console.log(userEntity)
-
   //   const userCreate = await controller.create({
   //     ...userCreateEntityMock,
   //     ...userEntity

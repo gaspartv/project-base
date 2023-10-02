@@ -1,4 +1,4 @@
 export class EmailCreateUserDto {
-  frontEndUrl: string
-  passwordToken: string
+  urlFront: string
+  passToken: string
 }

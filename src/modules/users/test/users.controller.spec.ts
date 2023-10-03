@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { userCreateMock } from './repositories/fake/mocks/users-create.mock'
-import { UsersFakeRepository } from './repositories/fake/users.fake.repository'
-import { UsersRepository } from './repositories/users.repository'
-import { UsersController } from './users.controller'
-import { UsersService } from './users.service'
+import { userCreateMock } from '../repositories/fake/mocks/users-create.mock'
+import { UsersFakeRepository } from '../repositories/fake/users.fake.repository'
+import { UsersRepository } from '../repositories/users.repository'
+import { UsersController } from '../users.controller'
+import { UsersService } from '../users.service'
 
 describe('UsersController', () => {
   let controller: UsersController

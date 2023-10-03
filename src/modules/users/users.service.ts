@@ -78,6 +78,7 @@ export class UsersService {
 
     const entity = new UserEntity({
       ...userFound,
+      disabledAt: new Date(),
       deletedAt: new Date()
     })
 

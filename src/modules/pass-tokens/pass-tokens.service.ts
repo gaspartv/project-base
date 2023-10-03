@@ -20,10 +20,14 @@ export class PassTokensService {
     const lastRequest: ResponsePassTokenEntity =
       await this.findLastRequest(userId)
 
-    const checkTimeSinceLastRequest: number = minutesDiff(lastRequest.createdAt)
+    if (lastRequest) {
+      const checkTimeSinceLastRequest: number = minutesDiff(
+        lastRequest.createdAt
+      )
 
-    if (checkTimeSinceLastRequest < 5) {
-      throw new PassTokenNotFoundError()
+      if (checkTimeSinceLastRequest < 5) {
+        throw new PassTokenNotFoundError()
+      }
     }
 
     await this.repository.revokedMany(userId)
@@ -40,11 +44,11 @@ export class PassTokensService {
     const passToken: ResponsePassTokenEntity =
       await this.repository.findLastRequest(userId)
 
-    if (!passToken) {
-      throw new PassTokenNotFoundError()
+    if (passToken) {
+      return passToken
     }
 
-    return passToken
+    return
   }
 
   async passTokenOrThrow(id: string): Promise<ResponsePassTokenEntity> {

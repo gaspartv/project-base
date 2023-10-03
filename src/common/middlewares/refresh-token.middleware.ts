@@ -49,7 +49,7 @@ export class RefreshTokenMiddleware implements NestMiddleware {
       const user: UserEntity = await this.usersService.findOneWhere({
         id: decoded.sign.sub,
         deletedAt: null,
-        disabledAt: null // TODO: FAZER VERIFICAÇÃO DE ROTA, SE ESTIVER NA ROTA DE ENABLE ENVIAR O DISABLED COMO UNDEFINED!
+        disabledAt: null
       })
 
       if (!user) {

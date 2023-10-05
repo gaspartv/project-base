@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { CryptModule } from '../../recipes/crypt/crypt.module'
+import { CryptModule } from '../../recipes/hashing/hash.module'
 import { PrismaModule } from '../../recipes/prisma/prisma.module'
 import { RedisModule } from '../../recipes/redis/redis.module'
 import { PassTokensModule } from '../pass-tokens/pass-tokens.module'

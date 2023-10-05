@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common'
-import { CryptService } from './crypt.service'
+import { HashService } from './hash.service'
 
 @Module({
   imports: [],
   controllers: [],
-  providers: [CryptService],
-  exports: [CryptService]
+  providers: [HashService],
+  exports: [HashService]
 })
 export class CryptModule {}

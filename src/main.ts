@@ -1,5 +1,4 @@
 import fastifyCookie from '@fastify/cookie'
-import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
 import { Logger, NestInterceptor, ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
@@ -19,6 +18,12 @@ async function bootstrap() {
     new FastifyAdapter()
   )
 
+  /// TRATAMENTO DO CORS ///
+  app.enableCors()
+
+  /// PROTEÇÃO PARA O CABEÇALHO DA APLICAÇÃO ///
+  await app.register(helmet)
+
   app.register(fileUpload, {
     limits: { fileSize: 1024 * 1024 * 5 },
     useTempFiles: true,
@@ -31,12 +36,6 @@ async function bootstrap() {
 
   // COOKIE
   await app.register(fastifyCookie, { secret: 'api-tibia-info' })
-
-  /// PROTEÇÃO PARA O CABEÇALHO DA APLICAÇÃO ///
-  await app.register(helmet)
-
-  /// TRATAMENTO DO CORS ///
-  await app.register(cors)
 
   /// VALIDAÇÃO ///
   app.useGlobalPipes(

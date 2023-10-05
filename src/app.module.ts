@@ -1,4 +1,3 @@
-import { BullModule } from '@nestjs/bull'
 import {
   MiddlewareConsumer,
   Module,
@@ -18,7 +17,6 @@ import { PassTokensModule } from './modules/pass-tokens/pass-tokens.module'
 import { PassTokensService } from './modules/pass-tokens/pass-tokens.service'
 import { SessionsModule } from './modules/sessions/sessions.module'
 import { UsersModule } from './modules/users/users.module'
-import { CryptModule } from './recipes/crypt/crypt.module'
 import { EmailModule } from './recipes/email/email.module'
 import { JwtGuard } from './recipes/passport-auth/guards/jwt.guard'
 import { JwtStrategy } from './recipes/passport-auth/strategies/jwt.strategy'
@@ -27,13 +25,11 @@ import { RedisModule } from './recipes/redis/redis.module'
 
 @Module({
   imports: [
-    BullModule.forRoot({
-      redis: {
-        host: 'redis',
-        port: 6379
-      }
-    }),
-    ThrottlerModule.forRoot(),
+    ThrottlerModule.forRoot([
+      { name: 'short', ttl: 1000, limit: 3 },
+      { name: 'medium', ttl: 10000, limit: 20 },
+      { name: 'long', ttl: 60000, limit: 100 }
+    ]),
     ConfigModule.forRoot({
       isGlobal: true,
       validationOptions: { allowUnknown: false }
@@ -47,7 +43,6 @@ import { RedisModule } from './recipes/redis/redis.module'
     UsersModule,
     SessionsModule,
     PassTokensModule,
-    CryptModule,
     EmailModule
   ],
   providers: [

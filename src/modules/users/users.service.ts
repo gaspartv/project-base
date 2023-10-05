@@ -2,7 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common'
 import { randomUUID } from 'crypto'
 import { UserNotFoundError } from '../../common/errors/not-found/UserNotFound.error'
 import { uriGenerator } from '../../common/utils/uri-generator.util'
-import { CryptService } from '../../recipes/crypt/crypt.service'
+import { HashService } from '../../recipes/hashing/hash.service'
 import { ResponsePassTokenEntity } from '../pass-tokens/entity/pass-token.entity'
 import { PassTokensService } from '../pass-tokens/pass-tokens.service'
 import { UserCreateDto } from './dto/request/create-user.dto'
@@ -22,7 +22,7 @@ import { UsersRepository } from './repositories/users.repository'
 export class UsersService {
   constructor(
     private readonly repository: UsersRepository,
-    private readonly cryptService: CryptService,
+    private readonly cryptService: HashService,
     private readonly passTokensService: PassTokensService
   ) {}
 

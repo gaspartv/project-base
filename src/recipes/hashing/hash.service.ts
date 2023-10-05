@@ -2,7 +2,7 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common'
 import { compareSync, hashSync } from 'bcryptjs'
 
 @Injectable()
-export class CryptService {
+export class HashService {
   passwordHash(password: string): string {
     const isDevelopment = process.env.NODE_ENV === 'dev'
 

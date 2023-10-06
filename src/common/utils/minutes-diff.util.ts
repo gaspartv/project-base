@@ -3,7 +3,7 @@ export function minutesDiff(end: Date, start?: Date): number {
 
   const dateEnd = new Date(end).getTime()
 
-  const diff = Math.abs(dateStart - dateEnd)
+  const diff = dateEnd - dateStart
 
   return Math.ceil(diff / (1000 * 60))
 }

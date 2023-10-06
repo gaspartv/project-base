@@ -1,6 +1,7 @@
-import { Injectable, NestMiddleware } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-import { NextFunction } from 'express'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { Next } from '@nestjs/common/decorators/http/route-params.decorator'
+import { NestMiddleware } from '@nestjs/common/interfaces/middleware/nest-middleware.interface'
+import { JwtService } from '@nestjs/jwt/dist/jwt.service'
 import { FastifyReply } from 'fastify'
 import { IPayload } from '../../modules/auth/interfaces/payload.interface'
 import { IRequest } from '../../modules/auth/interfaces/request.interface'
@@ -22,11 +23,7 @@ export class RefreshTokenMiddleware implements NestMiddleware {
     private readonly sessionsRepository: SessionsRepository
   ) {}
 
-  async use(
-    req: IRequest,
-    res: FastifyReply,
-    next: NextFunction
-  ): Promise<void> {
+  async use(req: IRequest, res: FastifyReply): Promise<void> {
     if (req.headers.authorization) {
       const token: string = req.headers.authorization.split('Bearer ')[1]
 
@@ -101,6 +98,6 @@ export class RefreshTokenMiddleware implements NestMiddleware {
       }
     }
 
-    next()
+    Next()
   }
 }

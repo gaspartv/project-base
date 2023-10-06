@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger/dist/decorators/api-property.decorator'
 import { Expose } from 'class-transformer'
 
 export enum PaginationOrder {

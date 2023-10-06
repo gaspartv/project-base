@@ -1,14 +1,13 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  ValidationPipe
-} from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
-import { APP_GUARD, APP_PIPE } from '@nestjs/core'
-import { JwtService } from '@nestjs/jwt'
-import { ServeStaticModule } from '@nestjs/serve-static'
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
+import { Module } from '@nestjs/common/decorators/modules/module.decorator'
+import { MiddlewareConsumer } from '@nestjs/common/interfaces/middleware/middleware-consumer.interface'
+import { NestModule } from '@nestjs/common/interfaces/modules/nest-module.interface'
+import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe'
+import { ConfigModule } from '@nestjs/config/dist/config.module'
+import { APP_GUARD, APP_PIPE } from '@nestjs/core/constants'
+import { JwtService } from '@nestjs/jwt/dist/jwt.service'
+import { ServeStaticModule } from '@nestjs/serve-static/dist/serve-static.module'
+import { ThrottlerGuard } from '@nestjs/throttler/dist/throttler.guard'
+import { ThrottlerModule } from '@nestjs/throttler/dist/throttler.module'
 import { join } from 'path'
 import { CheckPasswordGuard } from './common/guards/check-password.guard'
 import { RefreshTokenMiddleware } from './common/middlewares/refresh-token.middleware'

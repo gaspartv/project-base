@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 export function expiresAtGenerator(): Date {
   const dateNow: Date = new Date()
 

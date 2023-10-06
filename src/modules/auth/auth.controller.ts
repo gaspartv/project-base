@@ -6,7 +6,7 @@ import {
   Post,
   Req
 } from '@nestjs/common'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiTags } from '@nestjs/swagger/dist/decorators/api-use-tags.decorator'
 import { LocalAuth } from '../../common/decorators/auth-local.decorator'
 import { Sign } from '../../common/decorators/auth-sign.decorator'
 import { IsPublic } from '../../common/decorators/is-public.decorator'

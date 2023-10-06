@@ -3,6 +3,7 @@ import { MessageFileDto } from '../../modules/users/dto/request/update-user-phot
 import { mainDirname } from '../../root-dirname'
 
 export async function uriGenerator(file: MessageFileDto): Promise<string> {
+  console.log(file)
   const imageUri: string = `${file.tempFilePath}.${file.mimetype.split('/')[1]}`
 
   const dbUri: string = imageUri.split(/\\|\//)[1]

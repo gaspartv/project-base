@@ -3,7 +3,7 @@ import { ConflictException } from '@nestjs/common/exceptions/conflict.exception'
 import { randomUUID } from 'crypto'
 import { UserNotFoundError } from '../../common/errors/not-found/UserNotFound.error'
 import { uriGenerator } from '../../common/utils/uri-generator.util'
-import { HashService } from '../../recipes/hashing/hash.service'
+import { HashProvider } from '../../providers/hashing/hash.provider'
 import { ResponsePassTokenEntity } from '../pass-tokens/entity/pass-token.entity'
 import { PassTokensService } from '../pass-tokens/pass-tokens.service'
 import { UserCreateDto } from './dto/request/create-user.dto'
@@ -23,7 +23,6 @@ import { UsersRepository } from './repositories/users.repository'
 export class UsersService {
   constructor(
     private readonly repository: UsersRepository,
-    private readonly cryptService: HashService,
     private readonly passTokensService: PassTokensService
   ) {}
 
@@ -34,7 +33,7 @@ export class UsersService {
 
     const password: string = randomUUID().toString()
 
-    const passwordHash = this.cryptService.passwordHash(password)
+    const passwordHash = HashProvider.passwordHash(password)
 
     const entity: UserEntity = new UserEntity({
       ...dto,
@@ -181,9 +180,9 @@ export class UsersService {
 
     const userFound: UserResponseEntity = await this.userOrThrow(userId)
 
-    this.cryptService.passwordIsMatch(newPassword, userFound.passwordHash)
+    HashProvider.passwordIsMatch(newPassword, userFound.passwordHash)
 
-    const passwordHash: string = this.cryptService.passwordHash(newPassword)
+    const passwordHash: string = HashProvider.passwordHash(newPassword)
 
     const entity = new UserEntity({
       ...userFound,

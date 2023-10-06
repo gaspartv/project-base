@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common/decorators/modules/module.decorator'
-import { CryptModule } from '../../recipes/hashing/hash.module'
 import { PrismaModule } from '../../recipes/prisma/prisma.module'
 import { RedisModule } from '../../recipes/redis/redis.module'
 import { PassTokensModule } from '../pass-tokens/pass-tokens.module'
@@ -11,7 +10,7 @@ import { UsersService } from './users.service'
 import { UsersUseCase } from './users.use-case'
 
 @Module({
-  imports: [PrismaModule, RedisModule, CryptModule, PassTokensModule],
+  imports: [PrismaModule, RedisModule, PassTokensModule],
   controllers: [UsersController],
   providers: [
     UsersService,

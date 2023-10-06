@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { minutesDiff } from '../../common/utils/minutes-diff.util'
-import { EmailService } from '../../recipes/email/email.service'
+import { EmailProvider } from '../../providers/email/email.provider'
 import {
   PassTokenEntity,
   ResponsePassTokenEntity
@@ -11,10 +11,7 @@ import { PassTokenRepository } from './repositories/pass-tokens.repository'
 
 @Injectable()
 export class PassTokensService {
-  constructor(
-    private readonly repository: PassTokenRepository,
-    private readonly emailService: EmailService
-  ) {}
+  constructor(private readonly repository: PassTokenRepository) {}
 
   async create(userId: string): Promise<ResponsePassTokenEntity> {
     const lastRequest: ResponsePassTokenEntity =
@@ -90,7 +87,7 @@ export class PassTokensService {
   }
 
   async recoveryPass(email: string, passTokenId: string) {
-    this.emailService.recoveryPass(email, passTokenId)
+    EmailProvider.recoveryPass(email, passTokenId)
 
     if (process.env.NODE_ENV === 'dev') {
       console.info(passTokenId)

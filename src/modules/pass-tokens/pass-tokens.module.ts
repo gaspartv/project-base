@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common/decorators/modules/module.decorator'
-import { EmailModule } from '../../recipes/email/email.module'
 import { PrismaModule } from '../../recipes/prisma/prisma.module'
 import { PassTokensService } from './pass-tokens.service'
 import { PassTokenRepository } from './repositories/pass-tokens.repository'
 import { PassTokenPrismaRepository } from './repositories/prisma/pass-token.prisma.repository'
 
 @Module({
-  imports: [PrismaModule, EmailModule],
+  imports: [PrismaModule],
   providers: [
     PassTokensService,
     { provide: PassTokenRepository, useClass: PassTokenPrismaRepository }

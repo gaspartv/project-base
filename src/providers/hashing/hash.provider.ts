@@ -2,7 +2,7 @@ import { ConflictException } from '@nestjs/common/exceptions/conflict.exception'
 import { Logger } from '@nestjs/common/services/logger.service'
 import { compareSync, hashSync } from 'bcryptjs'
 
-export class HashService {
+export class HashProvider {
   static passwordHash(password: string): string {
     const isDevelopment = process.env.NODE_ENV === 'dev'
 

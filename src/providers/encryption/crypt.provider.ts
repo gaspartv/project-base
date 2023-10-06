@@ -5,8 +5,8 @@ import {
   randomBytes
 } from 'crypto'
 
-export class CryptService {
-  static encryptionKey = pbkdf2Sync(
+export class CryptProvider {
+  private static encryptionKey = pbkdf2Sync(
     process.env.ENCRYPTION_KEY,
     process.env.HASH_SALT,
     100000,
@@ -14,7 +14,7 @@ export class CryptService {
     'sha512'
   )
 
-  static algorithm = process.env.ALGORITHM
+  private static algorithm = process.env.ALGORITHM
 
   static encrypt(message: string): string {
     const iv = randomBytes(16)

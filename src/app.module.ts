@@ -16,7 +16,6 @@ import { PassTokensModule } from './modules/pass-tokens/pass-tokens.module'
 import { PassTokensService } from './modules/pass-tokens/pass-tokens.service'
 import { SessionsModule } from './modules/sessions/sessions.module'
 import { UsersModule } from './modules/users/users.module'
-import { EmailModule } from './recipes/email/email.module'
 import { JwtGuard } from './recipes/passport-auth/guards/jwt.guard'
 import { JwtStrategy } from './recipes/passport-auth/strategies/jwt.strategy'
 import { PrismaModule } from './recipes/prisma/prisma.module'
@@ -41,8 +40,7 @@ import { RedisModule } from './recipes/redis/redis.module'
     AuthModule,
     UsersModule,
     SessionsModule,
-    PassTokensModule,
-    EmailModule
+    PassTokensModule
   ],
   providers: [
     PassTokensService,

@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing/test'
+import { TestingModule } from '@nestjs/testing/testing-module'
 import { userCreateMock } from '../repositories/fake/mocks/users-create.mock'
 import { UsersFakeRepository } from '../repositories/fake/users.fake.repository'
 import { UsersRepository } from '../repositories/users.repository'

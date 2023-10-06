@@ -1,4 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { Logger } from '@nestjs/common/services/logger.service'
 import * as nodemailer from 'nodemailer'
 import { EmailGenerate } from './email.template'
 

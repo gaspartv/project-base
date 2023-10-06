@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { EUserPolice } from '@prisma/client'
 import { randomUUID } from 'crypto'
 import { UserNotFoundError } from '../../../../common/errors/not-found/UserNotFound.error'

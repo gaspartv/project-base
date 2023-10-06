@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { Module } from '@nestjs/common/decorators/modules/module.decorator'
 import { PrismaClient } from '@prisma/client'
 import { PrismaService } from './prisma.service'
 

@@ -1,15 +1,17 @@
+import { Controller } from '@nestjs/common/decorators/core/controller.decorator'
+import { HttpCode } from '@nestjs/common/decorators/http/http-code.decorator'
+import {
+  Get,
+  Patch,
+  Post
+} from '@nestjs/common/decorators/http/request-mapping.decorator'
 import {
   Body,
-  Controller,
-  Get,
-  HttpCode,
   Param,
-  ParseUUIDPipe,
-  Patch,
-  Post,
   Query
-} from '@nestjs/common'
-import { ApiTags } from '@nestjs/swagger'
+} from '@nestjs/common/decorators/http/route-params.decorator'
+import { ParseUUIDPipe } from '@nestjs/common/pipes/parse-uuid.pipe'
+import { ApiTags } from '@nestjs/swagger/dist/decorators/api-use-tags.decorator'
 import { Sign } from '../../common/decorators/auth-sign.decorator'
 import { IsPublic } from '../../common/decorators/is-public.decorator'
 import { ParseUuidPipe } from '../../common/pipes/parse-uuid.pipe'

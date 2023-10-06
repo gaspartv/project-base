@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { Prisma } from '@prisma/client'
 import { BooleanQuery } from '../../../../common/enum/boolean-query.enum'
 import { PrismaService } from '../../../../recipes/prisma/prisma.service'

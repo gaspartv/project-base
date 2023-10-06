@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common'
-import { PassportStrategy } from '@nestjs/passport'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { PassportStrategy } from '@nestjs/passport/dist/passport/passport.strategy'
 import 'dotenv/config'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { IPayload } from '../../../modules/auth/interfaces/payload.interface'

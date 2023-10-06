@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common'
-import { JwtModule } from '@nestjs/jwt'
+import { Module } from '@nestjs/common/decorators/modules/module.decorator'
+import { JwtModule } from '@nestjs/jwt/dist/jwt.module'
 import { PassportModule } from '@nestjs/passport'
 import { SessionsModule } from '../../modules/sessions/sessions.module'
 import { UsersModule } from '../../modules/users/users.module'

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { RedisService } from '../../../../recipes/redis/redis.service'
 import { UserPaginationDto } from '../../dto/request/pagination-user.dto'
 import { UserVerifyUniqueFieldDto } from '../../dto/verify-unique-field.dto'

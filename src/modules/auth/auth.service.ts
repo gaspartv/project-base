@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { JwtService } from '@nestjs/jwt/dist/jwt.service'
 import { compare } from 'bcryptjs'
 import { LoginUnauthorizedError } from '../../common/errors/unauthorized/LoginUnauthorized.error'
 import { expiresAtGenerator } from '../../common/utils/expires-generator.util'

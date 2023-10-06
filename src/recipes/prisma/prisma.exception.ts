@@ -1,5 +1,8 @@
-import { Catch, ExecutionContext, HttpServer, HttpStatus } from '@nestjs/common'
-import { BaseExceptionFilter } from '@nestjs/core'
+import { Catch } from '@nestjs/common/decorators/core/catch.decorator'
+import { HttpStatus } from '@nestjs/common/enums/http-status.enum'
+import { ExecutionContext } from '@nestjs/common/interfaces/features/execution-context.interface'
+import { HttpServer } from '@nestjs/common/interfaces/http/http-server.interface'
+import { BaseExceptionFilter } from '@nestjs/core/exceptions/base-exception-filter'
 import { Prisma } from '@prisma/client'
 import { FastifyReply } from 'fastify'
 

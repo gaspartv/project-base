@@ -1,4 +1,5 @@
-import { ConflictException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { ConflictException } from '@nestjs/common/exceptions/conflict.exception'
 import { randomUUID } from 'crypto'
 import { UserNotFoundError } from '../../common/errors/not-found/UserNotFound.error'
 import { uriGenerator } from '../../common/utils/uri-generator.util'

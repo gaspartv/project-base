@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { expiresAtGenerator } from '../../common/utils/expires-generator.util'
 import { UsersService } from '../users/users.service'
 import { SessionCreateDto } from './dto/create-session.dto'

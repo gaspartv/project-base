@@ -1,4 +1,6 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { ConflictException } from '@nestjs/common/exceptions/conflict.exception'
+import { Logger } from '@nestjs/common/services/logger.service'
 import { compareSync, hashSync } from 'bcryptjs'
 
 @Injectable()

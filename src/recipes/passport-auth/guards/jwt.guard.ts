@@ -1,10 +1,8 @@
-import {
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException
-} from '@nestjs/common'
-import { Reflector } from '@nestjs/core'
-import { AuthGuard } from '@nestjs/passport'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception'
+import { ExecutionContext } from '@nestjs/common/interfaces/features/execution-context.interface'
+import { Reflector } from '@nestjs/core/services/reflector.service'
+import { AuthGuard } from '@nestjs/passport/dist/auth.guard'
 import { IS_PUBLIC_KEY } from '../../../common/decorators/is-public.decorator'
 import { UnauthorizedError } from '../../../common/errors/Unauthorized.error'
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { SessionNotFoundError } from '../../../../common/errors/not-found/SessionNotFound.error'
 import { RedisService } from '../../../../recipes/redis/redis.service'
 import {

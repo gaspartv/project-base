@@ -1,8 +1,9 @@
-import { UnauthorizedException } from '@nestjs/common'
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
-import { Next } from '@nestjs/common/decorators/http/route-params.decorator'
-import { NestMiddleware } from '@nestjs/common/interfaces/middleware/nest-middleware.interface'
-import { JwtService } from '@nestjs/jwt/dist/jwt.service'
+import {
+  Injectable,
+  NestMiddleware,
+  UnauthorizedException
+} from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import { FastifyReply } from 'fastify'
 import { IPayload } from '../../modules/auth/interfaces/payload.interface'
 import { IRequest } from '../../modules/auth/interfaces/request.interface'
@@ -23,7 +24,11 @@ export class RefreshTokenMiddleware implements NestMiddleware {
     private readonly sessionsRepository: SessionsRepository
   ) {}
 
-  async use(req: IRequest, res: FastifyReply): Promise<void> {
+  async use(
+    req: IRequest,
+    res: FastifyReply,
+    next: (error?: any) => void
+  ): Promise<void> {
     if (req.headers.authorization) {
       const token: string = req.headers.authorization.split('Bearer ')[1]
 
@@ -33,7 +38,7 @@ export class RefreshTokenMiddleware implements NestMiddleware {
 
       const decoded: any = this.jwtService.decode(token)
 
-      const validateDecoded =
+      const validateDecoded: boolean =
         !decoded ||
         !decoded.sign ||
         !decoded.sign.sessionId ||
@@ -43,8 +48,10 @@ export class RefreshTokenMiddleware implements NestMiddleware {
         throw new UnauthorizedException('invalid token')
       }
 
+      const userId: string = decoded.sign.sub
+
       const user: UserEntity = await this.usersService.findOneWhere({
-        id: decoded.sign.sub,
+        id: userId,
         deletedAt: null,
         disabledAt: null
       })
@@ -54,17 +61,14 @@ export class RefreshTokenMiddleware implements NestMiddleware {
       }
 
       const session: SessionResponseEntity =
-        await this.sessionsRepository.findOne(decoded.sign.sessionId)
+        await this.sessionsRepository.findOne(userId)
 
-      if (!session) {
-        throw new UnauthorizedException('invalid token')
-      }
+      const sessionValidate: boolean =
+        !session ||
+        session.disconnectedAt !== null ||
+        session.tokens.includes(token)
 
-      if (session.disconnectedAt !== null) {
-        throw new UnauthorizedException('invalid token')
-      }
-
-      if (session.tokens.includes(token)) {
+      if (sessionValidate) {
         throw new UnauthorizedException('invalid token')
       }
 
@@ -73,7 +77,7 @@ export class RefreshTokenMiddleware implements NestMiddleware {
         Number(new Date(session.expiresAt).getTime())
 
       if (validateDate) {
-        const expiresAt = GeneratorDate.expiresAt()
+        const expiresAt: Date = GeneratorDate.expiresAt()
 
         const payload: IPayload = {
           sign: {
@@ -98,6 +102,6 @@ export class RefreshTokenMiddleware implements NestMiddleware {
       }
     }
 
-    Next()
+    next()
   }
 }

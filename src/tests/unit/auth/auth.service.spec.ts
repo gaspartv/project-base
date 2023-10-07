@@ -1,11 +1,10 @@
-import { JwtService } from '@nestjs/jwt/dist/jwt.service'
-import { Test } from '@nestjs/testing/test'
-import { TestingModule } from '@nestjs/testing/testing-module'
-import { SessionsFakeRepository } from '../sessions/repositories/fake/sessions.fake.repository'
-import { SessionsRepository } from '../sessions/repositories/sessions.repository'
-import { UsersFakeRepository } from '../users/repositories/fake/users.fake.repository'
-import { UsersRepository } from '../users/repositories/users.repository'
-import { AuthService } from './auth.service'
+import { JwtService } from '@nestjs/jwt'
+import { Test, TestingModule } from '@nestjs/testing'
+import { AuthService } from '../../../modules/auth/auth.service'
+import { SessionsFakeRepository } from '../../../modules/sessions/repositories/fake/sessions.fake.repository'
+import { SessionsRepository } from '../../../modules/sessions/repositories/sessions.repository'
+import { UsersFakeRepository } from '../../../modules/users/repositories/fake/users.fake.repository'
+import { UsersRepository } from '../../../modules/users/repositories/users.repository'
 
 describe('AuthService', () => {
   let service: AuthService

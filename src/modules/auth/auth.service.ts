@@ -1,6 +1,5 @@
-import { UnauthorizedException } from '@nestjs/common'
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
-import { JwtService } from '@nestjs/jwt/dist/jwt.service'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import { compare } from 'bcryptjs'
 import { GeneratorDate } from '../../common/utils/generator-date'
 import { UserEntity } from '../../modules/users/entities/user.entity'
@@ -44,7 +43,8 @@ export class AuthService {
     }
 
     return {
-      token: this.jwtService.sign(payload)
+      token: this.jwtService.sign(payload),
+      User: user
     }
   }
 

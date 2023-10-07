@@ -1,11 +1,5 @@
-import { Controller } from '@nestjs/common/decorators/core/controller.decorator'
-import { HttpCode } from '@nestjs/common/decorators/http/http-code.decorator'
-import {
-  Delete,
-  Post
-} from '@nestjs/common/decorators/http/request-mapping.decorator'
-import { Req } from '@nestjs/common/decorators/http/route-params.decorator'
-import { ApiTags } from '@nestjs/swagger/dist/decorators/api-use-tags.decorator'
+import { Controller, Delete, HttpCode, Post, Req } from '@nestjs/common'
+import { ApiTags } from '@nestjs/swagger'
 import { IsPublic } from '../../common/decorators/custom/is-public.decorator'
 import { LocalAuth } from '../../common/decorators/local-auth.decorator'
 import { Sign } from '../../common/decorators/param/sign.decorator'

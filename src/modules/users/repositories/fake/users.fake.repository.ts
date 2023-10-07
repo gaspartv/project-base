@@ -1,5 +1,4 @@
-import { NotFoundException } from '@nestjs/common'
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { EUserPolice } from '@prisma/client'
 import { randomUUID } from 'crypto'
 import { UserPaginationDto } from '../../dto/request/pagination-user.dto'

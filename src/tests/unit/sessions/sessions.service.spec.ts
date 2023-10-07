@@ -1,11 +1,10 @@
-import { Test } from '@nestjs/testing/test'
-import { TestingModule } from '@nestjs/testing/testing-module'
+import { Test, TestingModule } from '@nestjs/testing'
 import { randomUUID } from 'crypto'
-import { UsersRepository } from '../users/repositories/users.repository'
-import { SessionCreateDto } from './dto/create-session.dto'
-import { SessionsFakeRepository } from './repositories/fake/sessions.fake.repository'
-import { SessionsRepository } from './repositories/sessions.repository'
-import { SessionsService } from './sessions.service'
+import { SessionCreateDto } from '../../../modules/sessions/dto/create-session.dto'
+import { SessionsFakeRepository } from '../../../modules/sessions/repositories/fake/sessions.fake.repository'
+import { SessionsRepository } from '../../../modules/sessions/repositories/sessions.repository'
+import { SessionsService } from '../../../modules/sessions/sessions.service'
+import { UsersRepository } from '../../../modules/users/repositories/users.repository'
 
 describe('SessionsService', () => {
   let service: SessionsService

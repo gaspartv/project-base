@@ -1,11 +1,10 @@
 import { faker } from '@faker-js/faker'
-import { Test } from '@nestjs/testing/test'
-import { TestingModule } from '@nestjs/testing/testing-module'
-import { UserCreateDto } from '../dto/request/create-user.dto'
-import { UserResponseEntity } from '../entities/user.entity'
-import { UsersFakeRepository } from '../repositories/fake/users.fake.repository'
-import { UsersRepository } from '../repositories/users.repository'
-import { UsersService } from '../users.service'
+import { Test, TestingModule } from '@nestjs/testing'
+import { UserCreateDto } from '../../../modules/users/dto/request/create-user.dto'
+import { UserResponseEntity } from '../../../modules/users/entities/user.entity'
+import { UsersFakeRepository } from '../../../modules/users/repositories/fake/users.fake.repository'
+import { UsersRepository } from '../../../modules/users/repositories/users.repository'
+import { UsersService } from '../../../modules/users/users.service'
 
 describe('UsersService', () => {
   let service: UsersService

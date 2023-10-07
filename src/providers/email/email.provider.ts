@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common/services/logger.service'
+import { Logger } from '@nestjs/common'
 import 'dotenv/config'
 import * as nodemailer from 'nodemailer'
 import { EmailCreateUserDto } from './dto/request/email-create-user.dto'

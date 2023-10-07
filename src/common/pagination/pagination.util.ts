@@ -1,6 +1,6 @@
-import { PaginationResponse } from './pagination-response.entity'
-import { PaginationDto } from './pagination.dto'
-import { PaginationEntity } from './pagination.entity'
+import { PaginationDto } from './dto/pagination.dto'
+import { PaginationResponse } from './entity/pagination-response.entity'
+import { PaginationEntity } from './entity/pagination.entity'
 
 export class PaginationUtil {
   static options(dto: PaginationDto): PaginationEntity {

@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common/decorators/modules/module.decorator'
-import { JwtModule } from '@nestjs/jwt/dist/jwt.module'
+import { Module } from '@nestjs/common'
+import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 import { LocalStrategy } from '../../common/strategies/local.strategy'
 import { PrismaModule } from '../../config/prisma/prisma.module'

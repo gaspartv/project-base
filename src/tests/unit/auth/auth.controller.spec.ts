@@ -1,13 +1,12 @@
-import { JwtModule } from '@nestjs/jwt/dist/jwt.module'
-import { PassportModule } from '@nestjs/passport/dist/passport.module'
-import { Test } from '@nestjs/testing/test'
-import { TestingModule } from '@nestjs/testing/testing-module'
-import { LocalStrategy } from '../../common/strategies/local.strategy'
-import { PrismaModule } from '../../config/prisma/prisma.module'
-import { SessionsModule } from '../sessions/sessions.module'
-import { UsersModule } from '../users/users.module'
-import { AuthController } from './auth.controller'
-import { AuthService } from './auth.service'
+import { JwtModule } from '@nestjs/jwt'
+import { PassportModule } from '@nestjs/passport'
+import { Test, TestingModule } from '@nestjs/testing'
+import { LocalStrategy } from '../../../common/strategies/local.strategy'
+import { PrismaModule } from '../../../config/prisma/prisma.module'
+import { AuthController } from '../../../modules/auth/auth.controller'
+import { AuthService } from '../../../modules/auth/auth.service'
+import { SessionsModule } from '../../../modules/sessions/sessions.module'
+import { UsersModule } from '../../../modules/users/users.module'
 
 describe('AuthController', () => {
   let controller: AuthController

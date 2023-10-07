@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
-import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception'
-import { ExecutionContext } from '@nestjs/common/interfaces/features/execution-context.interface'
-import { Reflector } from '@nestjs/core/services/reflector.service'
-import { AuthGuard } from '@nestjs/passport/dist/auth.guard'
+import {
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException
+} from '@nestjs/common'
+import { Reflector } from '@nestjs/core'
+import { AuthGuard } from '@nestjs/passport'
 import { IS_PUBLIC_KEY } from '../decorators/custom/is-public.decorator'
 
 @Injectable()
@@ -12,10 +14,10 @@ export class JwtGuard extends AuthGuard('jwt-all') {
   }
 
   canActivate(context: ExecutionContext): Promise<boolean> | boolean {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass()
-    ])
+    const isPublic: boolean = this.reflector.getAllAndOverride<boolean>(
+      IS_PUBLIC_KEY,
+      [context.getHandler(), context.getClass()]
+    )
 
     if (isPublic) {
       return true

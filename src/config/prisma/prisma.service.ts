@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
-import { OnModuleInit } from '@nestjs/common/interfaces/hooks/on-init.interface'
+import { Injectable, OnModuleInit } from '@nestjs/common'
 import { PrismaClient } from '@prisma/client'
 
 @Injectable()

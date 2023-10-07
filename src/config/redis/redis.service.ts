@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
-import { Logger } from '@nestjs/common/services/logger.service'
+import { Injectable, Logger } from '@nestjs/common'
 import { Redis } from 'ioredis'
 
 @Injectable()

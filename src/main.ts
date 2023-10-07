@@ -1,12 +1,12 @@
 import fastifyCookie from '@fastify/cookie'
 import helmet from '@fastify/helmet'
-import { ValidationPipe } from '@nestjs/common'
-import { NestInterceptor } from '@nestjs/common/interfaces/features/nest-interceptor.interface'
-import { Logger } from '@nestjs/common/services/logger.service'
-import { NestFactory } from '@nestjs/core/nest-factory'
-import { FastifyAdapter } from '@nestjs/platform-fastify/adapters/fastify-adapter'
-import { NestFastifyApplication } from '@nestjs/platform-fastify/interfaces/nest-fastify-application.interface'
-import fileUpload from 'fastify-file-upload/index'
+import { Logger, NestInterceptor, ValidationPipe } from '@nestjs/common'
+import { NestFactory } from '@nestjs/core'
+import {
+  FastifyAdapter,
+  NestFastifyApplication
+} from '@nestjs/platform-fastify'
+import fileUpload from 'fastify-file-upload'
 import { AppModule } from './app.module'
 import { TransformationInterceptor } from './config/global-interceptor'
 import { PrismaClientExceptionFilter } from './config/prisma/prisma.exception'
@@ -57,7 +57,7 @@ async function bootstrap() {
   documentBuilder(app)
 
   await app.listen(Number(process.env.PORT_BACKEND), '0.0.0.0', () =>
-    Logger.log(`> Server start in port ${process.env.PORT_BACKEND}`)
+    Logger.log(`> Server start in port ${Number(process.env.PORT_BACKEND)}`)
   )
 }
 bootstrap()

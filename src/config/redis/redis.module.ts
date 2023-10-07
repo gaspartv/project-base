@@ -1,5 +1,4 @@
-import { Module } from '@nestjs/common/decorators/modules/module.decorator'
-import { Logger } from '@nestjs/common/services/logger.service'
+import { Logger, Module } from '@nestjs/common'
 import { RedisService } from './redis.service'
 
 @Module({

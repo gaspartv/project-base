@@ -1,7 +1,5 @@
-import { NestFastifyApplication } from '@nestjs/platform-fastify/interfaces/nest-fastify-application.interface'
-import { DocumentBuilder } from '@nestjs/swagger/dist/document-builder'
-import { OpenAPIObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface'
-import { SwaggerModule } from '@nestjs/swagger/dist/swagger-module'
+import { NestFastifyApplication } from '@nestjs/platform-fastify'
+import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger'
 
 export function documentBuilder(app: NestFastifyApplication): void {
   const config: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()

@@ -1,5 +1,4 @@
-import { ConflictException } from '@nestjs/common/exceptions/conflict.exception'
-import { Logger } from '@nestjs/common/services/logger.service'
+import { ConflictException, Logger } from '@nestjs/common'
 import { compareSync, hashSync } from 'bcryptjs'
 
 export class HashProvider {

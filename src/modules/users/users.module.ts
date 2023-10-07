@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common/decorators/modules/module.decorator'
+import { Module } from '@nestjs/common'
 import { PrismaModule } from '../../config/prisma/prisma.module'
 import { RedisModule } from '../../config/redis/redis.module'
 import { PassTokensModule } from '../pass-tokens/pass-tokens.module'

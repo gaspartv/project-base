@@ -6,10 +6,9 @@ import {
 } from '@nestjs/common/decorators/http/request-mapping.decorator'
 import { Req } from '@nestjs/common/decorators/http/route-params.decorator'
 import { ApiTags } from '@nestjs/swagger/dist/decorators/api-use-tags.decorator'
-import { LocalAuth } from '../../common/decorators/auth-local.decorator'
-import { Sign } from '../../common/decorators/auth-sign.decorator'
-import { IsPublic } from '../../common/decorators/is-public.decorator'
-import { HttpStatus } from '../../common/errors/AppError'
+import { IsPublic } from '../../common/decorators/custom/is-public.decorator'
+import { LocalAuth } from '../../common/decorators/local-auth.decorator'
+import { Sign } from '../../common/decorators/param/sign.decorator'
 import { AuthService } from './auth.service'
 import { TokenResponseDto } from './dto/auth-response.dto'
 import { MessageDto } from './dto/message.dto'
@@ -24,7 +23,7 @@ export class AuthController {
   @IsPublic()
   @LocalAuth()
   @Post()
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(200)
   async login(@Req() req: IRequest): Promise<TokenResponseDto> {
     return await this.service.login(req.user)
   }

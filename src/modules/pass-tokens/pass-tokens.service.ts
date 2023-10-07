@@ -1,12 +1,11 @@
+import { ConflictException, NotFoundException } from '@nestjs/common'
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
-import { minutesDiff } from '../../common/utils/minutes-diff.util'
+import { GeneratorDate } from '../../common/utils/generator-date'
 import { EmailProvider } from '../../providers/email/email.provider'
 import {
   PassTokenEntity,
   ResponsePassTokenEntity
 } from './entity/pass-token.entity'
-import { PassTokenNotFoundError } from './exceptions/pass-token-not-found.error'
-import { PassTokenNotValidateError } from './exceptions/pass-token-not-validate.error'
 import { PassTokenRepository } from './repositories/pass-tokens.repository'
 
 @Injectable()
@@ -18,12 +17,12 @@ export class PassTokensService {
       await this.findLastRequest(userId)
 
     if (lastRequest) {
-      const checkTimeSinceLastRequest: number = minutesDiff(
+      const checkTimeSinceLastRequest: number = GeneratorDate.minutesDiff(
         lastRequest.createdAt
       )
 
       if (checkTimeSinceLastRequest < 5) {
-        throw new PassTokenNotFoundError()
+        throw new NotFoundException('password token not found')
       }
     }
 
@@ -53,7 +52,7 @@ export class PassTokensService {
       await this.repository.findOneWhere({ id })
 
     if (!passToken) {
-      throw new PassTokenNotFoundError()
+      throw new NotFoundException('password token not found')
     }
 
     return passToken
@@ -69,7 +68,7 @@ export class PassTokensService {
       passToken.revokedAt
 
     if (passTokenNotValidate) {
-      throw new PassTokenNotValidateError()
+      throw new ConflictException('password token not validated')
     }
 
     return passToken
@@ -87,7 +86,7 @@ export class PassTokensService {
   }
 
   async recoveryPass(email: string, passTokenId: string) {
-    EmailProvider.recoveryPass(email, passTokenId)
+    EmailProvider.recoveryPass({ email, passTokenId })
 
     if (process.env.NODE_ENV === 'dev') {
       console.info(passTokenId)

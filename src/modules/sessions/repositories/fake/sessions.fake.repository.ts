@@ -1,4 +1,4 @@
-import { SessionNotFoundError } from '../../../../common/errors/not-found/SessionNotFound.error'
+import { NotFoundException } from '@nestjs/common'
 import {
   SessionEntity,
   SessionResponseEntity
@@ -33,7 +33,7 @@ export class SessionsFakeRepository implements SessionsRepository {
     const sessionFound = this.sessions.find((session) => session.id === id)
 
     if (!sessionFound) {
-      throw new SessionNotFoundError()
+      throw new NotFoundException('session not found')
     }
 
     return new SessionResponseEntity(sessionFound)

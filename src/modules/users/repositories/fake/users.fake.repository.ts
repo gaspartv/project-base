@@ -1,7 +1,7 @@
+import { NotFoundException } from '@nestjs/common'
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { EUserPolice } from '@prisma/client'
 import { randomUUID } from 'crypto'
-import { UserNotFoundError } from '../../../../common/errors/not-found/UserNotFound.error'
 import { UserPaginationDto } from '../../dto/request/pagination-user.dto'
 import { UserVerifyUniqueFieldDto } from '../../dto/verify-unique-field.dto'
 import { UserWhereDto } from '../../dto/where-user.dto'
@@ -53,7 +53,7 @@ export class UsersFakeRepository implements UsersRepository {
     const user = this.users.find((el) => el.id === id)
 
     if (!user) {
-      throw new UserNotFoundError()
+      throw new NotFoundException('user not found')
     }
 
     return user
@@ -86,7 +86,7 @@ export class UsersFakeRepository implements UsersRepository {
     })
 
     if (!user) {
-      throw new UserNotFoundError()
+      throw new NotFoundException('user not found')
     }
 
     return user

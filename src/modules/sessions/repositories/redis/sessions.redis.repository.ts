@@ -1,6 +1,6 @@
+import { NotFoundException } from '@nestjs/common'
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
-import { SessionNotFoundError } from '../../../../common/errors/not-found/SessionNotFound.error'
-import { RedisService } from '../../../../recipes/redis/redis.service'
+import { RedisService } from '../../../../config/redis/redis.service'
 import {
   SessionEntity,
   SessionResponseEntity
@@ -67,7 +67,7 @@ export class SessionsRedisRepository implements SessionsRepository {
     const sessionFound = await this.prisma.findOne(id)
 
     if (!sessionFound) {
-      throw new SessionNotFoundError()
+      throw new NotFoundException('session not found')
     }
 
     const value = JSON.stringify(sessionFound)

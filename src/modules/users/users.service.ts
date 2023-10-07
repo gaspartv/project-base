@@ -1,8 +1,8 @@
+import { NotFoundException } from '@nestjs/common'
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { ConflictException } from '@nestjs/common/exceptions/conflict.exception'
 import { randomUUID } from 'crypto'
-import { UserNotFoundError } from '../../common/errors/not-found/UserNotFound.error'
-import { uriGenerator } from '../../common/utils/uri-generator.util'
+import { GeneratorFile } from '../../common/utils/generator-file'
 import { HashProvider } from '../../providers/hashing/hash.provider'
 import { ResponsePassTokenEntity } from '../pass-tokens/entity/pass-token.entity'
 import { PassTokensService } from '../pass-tokens/pass-tokens.service'
@@ -105,7 +105,7 @@ export class UsersService {
   ): Promise<UserResponseEntity> {
     const userFound: UserResponseEntity = await this.userOrThrow(id)
 
-    const imageUri: string = await uriGenerator(file)
+    const imageUri: string = await GeneratorFile.uri(file)
 
     const entity: UserEntity = new UserEntity({
       ...userFound,
@@ -210,7 +210,7 @@ export class UsersService {
     const user = await this.repository.findOneWhere(where)
 
     if (!user) {
-      throw new UserNotFoundError()
+      throw new NotFoundException('user not found')
     }
 
     return new UserResponseEntity(user)
@@ -220,7 +220,7 @@ export class UsersService {
     const user = await this.repository.findOne(id)
 
     if (!user) {
-      throw new UserNotFoundError()
+      throw new NotFoundException('user not found')
     }
 
     return user

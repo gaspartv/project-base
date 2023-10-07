@@ -1,8 +1,8 @@
+import { UnauthorizedException } from '@nestjs/common'
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { JwtService } from '@nestjs/jwt/dist/jwt.service'
 import { compare } from 'bcryptjs'
-import { LoginUnauthorizedError } from '../../common/errors/unauthorized/LoginUnauthorized.error'
-import { expiresAtGenerator } from '../../common/utils/expires-generator.util'
+import { GeneratorDate } from '../../common/utils/generator-date'
 import { UserEntity } from '../../modules/users/entities/user.entity'
 import {
   SessionEntity,
@@ -23,7 +23,7 @@ export class AuthService {
   ) {}
 
   async login(user: UserEntity): Promise<TokenResponseDto> {
-    const expiresAt: Date = expiresAtGenerator()
+    const expiresAt: Date = GeneratorDate.expiresAt()
 
     const entity: SessionEntity = new SessionEntity({
       userId: user.id,
@@ -62,7 +62,7 @@ export class AuthService {
     })
 
     if (!user) {
-      throw new LoginUnauthorizedError()
+      throw new UnauthorizedException('login unauthorized')
     }
 
     return await this.validate(user, password)
@@ -83,6 +83,6 @@ export class AuthService {
       }
     }
 
-    throw new LoginUnauthorizedError()
+    throw new UnauthorizedException('login unauthorized')
   }
 }

@@ -1,8 +1,9 @@
-import { EmailCreateUserDto } from './dto/email-create-user.dto'
-import { EmailRecoveryUserDto } from './dto/email-recovery-user.dto'
+import { EmailTemplateCreateUserDto } from './dto/request/email-template-create-user.dto'
+import { EmailTemplateRecoveryUserDto } from './dto/request/email-template-recovery-user.dto'
+import { ResponseEmail } from './dto/response/email-response.dto'
 
 export class EmailGenerate {
-  static createUser(dto: EmailCreateUserDto) {
+  static createUser(dto: EmailTemplateCreateUserDto): ResponseEmail {
     const { passToken, urlFront } = dto
 
     return {
@@ -11,7 +12,7 @@ export class EmailGenerate {
     }
   }
 
-  static passUserRecovery(dto: EmailRecoveryUserDto) {
+  static passUserRecovery(dto: EmailTemplateRecoveryUserDto): ResponseEmail {
     const { passToken, urlFront } = dto
 
     return {

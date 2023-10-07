@@ -1,3 +1,4 @@
+import { UnauthorizedException } from '@nestjs/common'
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { Next } from '@nestjs/common/decorators/http/route-params.decorator'
 import { NestMiddleware } from '@nestjs/common/interfaces/middleware/nest-middleware.interface'
@@ -12,8 +13,7 @@ import {
 import { SessionsRepository } from '../../modules/sessions/repositories/sessions.repository'
 import { UserEntity } from '../../modules/users/entities/user.entity'
 import { UsersService } from '../../modules/users/users.service'
-import { InvalidTokenUnauthorizedError } from '../errors/unauthorized/InvalidTokenUnauthorized.error'
-import { expiresAtGenerator } from '../utils/expires-generator.util'
+import { GeneratorDate } from '../utils/generator-date'
 
 @Injectable()
 export class RefreshTokenMiddleware implements NestMiddleware {
@@ -28,7 +28,7 @@ export class RefreshTokenMiddleware implements NestMiddleware {
       const token: string = req.headers.authorization.split('Bearer ')[1]
 
       if (!token) {
-        throw new InvalidTokenUnauthorizedError()
+        throw new UnauthorizedException('invalid token')
       }
 
       const decoded: any = this.jwtService.decode(token)
@@ -40,7 +40,7 @@ export class RefreshTokenMiddleware implements NestMiddleware {
         !decoded.sign.sub
 
       if (validateDecoded) {
-        throw new InvalidTokenUnauthorizedError()
+        throw new UnauthorizedException('invalid token')
       }
 
       const user: UserEntity = await this.usersService.findOneWhere({
@@ -50,22 +50,22 @@ export class RefreshTokenMiddleware implements NestMiddleware {
       })
 
       if (!user) {
-        throw new InvalidTokenUnauthorizedError()
+        throw new UnauthorizedException('invalid token')
       }
 
       const session: SessionResponseEntity =
         await this.sessionsRepository.findOne(decoded.sign.sessionId)
 
       if (!session) {
-        throw new InvalidTokenUnauthorizedError()
+        throw new UnauthorizedException('invalid token')
       }
 
       if (session.disconnectedAt !== null) {
-        throw new InvalidTokenUnauthorizedError()
+        throw new UnauthorizedException('invalid token')
       }
 
       if (session.tokens.includes(token)) {
-        throw new InvalidTokenUnauthorizedError()
+        throw new UnauthorizedException('invalid token')
       }
 
       const validateDate: boolean =
@@ -73,7 +73,7 @@ export class RefreshTokenMiddleware implements NestMiddleware {
         Number(new Date(session.expiresAt).getTime())
 
       if (validateDate) {
-        const expiresAt = expiresAtGenerator()
+        const expiresAt = GeneratorDate.expiresAt()
 
         const payload: IPayload = {
           sign: {

@@ -4,7 +4,7 @@ import { compareSync, hashSync } from 'bcryptjs'
 
 export class HashProvider {
   static passwordHash(password: string): string {
-    const isDevelopment = process.env.NODE_ENV === 'dev'
+    const isDevelopment: boolean = process.env.NODE_ENV === 'dev'
 
     if (isDevelopment) {
       Logger.log({ password })

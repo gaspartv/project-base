@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { HttpArgumentsHost } from '@nestjs/common/interfaces/features/arguments-host.interface'
 import { ExecutionContext } from '@nestjs/common/interfaces/features/execution-context.interface'
 import {
   CallHandler,
@@ -19,7 +20,7 @@ export class TransformationInterceptor<T>
     context: ExecutionContext,
     next: CallHandler
   ): Observable<Response<T>> {
-    const httpContext = context.switchToHttp()
+    const httpContext: HttpArgumentsHost = context.switchToHttp()
     const response: FastifyReply = httpContext.getResponse<FastifyReply>()
     const request: FastifyRequest = httpContext.getRequest<FastifyRequest>()
 

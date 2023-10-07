@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
-import { RedisService } from '../../../../recipes/redis/redis.service'
+import { RedisService } from '../../../../config/redis/redis.service'
 import { UserPaginationDto } from '../../dto/request/pagination-user.dto'
 import { UserVerifyUniqueFieldDto } from '../../dto/verify-unique-field.dto'
 import { UserWhereDto } from '../../dto/where-user.dto'

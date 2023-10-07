@@ -8,9 +8,9 @@ import { FastifyAdapter } from '@nestjs/platform-fastify/adapters/fastify-adapte
 import { NestFastifyApplication } from '@nestjs/platform-fastify/interfaces/nest-fastify-application.interface'
 import fileUpload from 'fastify-file-upload/index'
 import { AppModule } from './app.module'
-import { TransformationInterceptor } from './common/utils/global-interceptor.util'
-import { PrismaClientExceptionFilter } from './recipes/prisma/prisma.exception'
-import { documentBuilder } from './recipes/swagger/document-builder'
+import { TransformationInterceptor } from './config/global-interceptor'
+import { PrismaClientExceptionFilter } from './config/prisma/prisma.exception'
+import { documentBuilder } from './config/swagger/document-builder'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(

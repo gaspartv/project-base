@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
-import { expiresAtGenerator } from '../../common/utils/expires-generator.util'
+import { GeneratorDate } from '../../common/utils/generator-date'
 import { UsersService } from '../users/users.service'
 import { SessionCreateDto } from './dto/create-session.dto'
 import { SessionEntity, SessionResponseEntity } from './entities/session.entity'
@@ -15,7 +15,7 @@ export class SessionsService {
   async create(dto: SessionCreateDto): Promise<SessionResponseEntity> {
     await this.usersService.userOrThrow(dto.userId)
 
-    const expiresAt: Date = expiresAtGenerator()
+    const expiresAt: Date = GeneratorDate.expiresAt()
 
     const entity: SessionEntity = new SessionEntity({
       userId: dto.userId,

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common/decorators/modules/module.decorator'
 import { JwtModule } from '@nestjs/jwt/dist/jwt.module'
 import { PassportModule } from '@nestjs/passport'
+import { LocalStrategy } from '../../common/strategies/local.strategy'
+import { PrismaModule } from '../../config/prisma/prisma.module'
 import { SessionsModule } from '../../modules/sessions/sessions.module'
 import { UsersModule } from '../../modules/users/users.module'
-import { LocalStrategy } from '../../recipes/passport-auth/strategies/local.strategy'
-import { PrismaModule } from '../../recipes/prisma/prisma.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 

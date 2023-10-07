@@ -1,12 +1,15 @@
 import {
+  Cipher,
+  Decipher,
   createCipheriv,
   createDecipheriv,
   pbkdf2Sync,
   randomBytes
 } from 'crypto'
+import 'dotenv'
 
 export class CryptProvider {
-  private static encryptionKey = pbkdf2Sync(
+  private static encryptionKey: Buffer = pbkdf2Sync(
     process.env.ENCRYPTION_KEY,
     process.env.HASH_SALT,
     100000,
@@ -14,18 +17,18 @@ export class CryptProvider {
     'sha512'
   )
 
-  private static algorithm = process.env.ALGORITHM
+  private static algorithm: string = process.env.ALGORITHM
 
   static encrypt(message: string): string {
-    const iv = randomBytes(16)
+    const iv: Buffer = randomBytes(16)
 
-    const cipher = createCipheriv(
+    const cipher: Cipher = createCipheriv(
       this.algorithm,
       Buffer.from(this.encryptionKey),
       iv
     )
 
-    let encryptedMessage = cipher.update(message, 'utf8', 'hex')
+    let encryptedMessage: string = cipher.update(message, 'utf8', 'hex')
 
     encryptedMessage += cipher.final('hex')
 
@@ -35,15 +38,19 @@ export class CryptProvider {
   static decrypt(message: string): string {
     const [ivHex, encryptedMessage] = message.split(':')
 
-    const iv = Buffer.from(ivHex, 'hex')
+    const iv: Buffer = Buffer.from(ivHex, 'hex')
 
-    const decipher = createDecipheriv(
+    const decipher: Decipher = createDecipheriv(
       this.algorithm,
       Buffer.from(this.encryptionKey),
       iv
     )
 
-    let decryptedMessage = decipher.update(encryptedMessage, 'hex', 'utf8')
+    let decryptedMessage: string = decipher.update(
+      encryptedMessage,
+      'hex',
+      'utf8'
+    )
 
     return (decryptedMessage += decipher.final('utf8'))
   }

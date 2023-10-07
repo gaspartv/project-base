@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { Prisma } from '@prisma/client'
 import { BooleanQuery } from '../../../../common/enum/boolean-query.enum'
-import { PrismaService } from '../../../../recipes/prisma/prisma.service'
+import { PrismaService } from '../../../../config/prisma/prisma.service'
 import { UserPaginationDto } from '../../dto/request/pagination-user.dto'
 import { UserVerifyUniqueFieldDto } from '../../dto/verify-unique-field.dto'
 import { UserWhereDto } from '../../dto/where-user.dto'

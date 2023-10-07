@@ -1,3 +1,4 @@
+import { UnauthorizedException } from '@nestjs/common'
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { CanActivate } from '@nestjs/common/interfaces/features/can-activate.interface'
 import { ExecutionContext } from '@nestjs/common/interfaces/features/execution-context.interface'
@@ -6,8 +7,7 @@ import { Reflector } from '@nestjs/core/services/reflector.service'
 import { compare } from 'bcryptjs'
 import { UserEntity } from '../../modules/users/entities/user.entity'
 import { UsersService } from '../../modules/users/users.service'
-import { IS_PASSWORD_CHECK_REQUIRED } from '../decorators/check-password.decorator'
-import { InvalidCredentialUnauthorizedError } from '../errors/unauthorized/InvalidCredentialUnauthorized.error'
+import { IS_PASSWORD_CHECK_REQUIRED } from '../decorators/custom/check-password.decorator'
 
 @Injectable()
 export class CheckPasswordGuard implements CanActivate {
@@ -44,7 +44,7 @@ export class CheckPasswordGuard implements CanActivate {
     })
 
     if (!user) {
-      throw new InvalidCredentialUnauthorizedError()
+      throw new UnauthorizedException('invalid credentials')
     }
 
     const passwordValid: boolean = await compare(
@@ -53,7 +53,7 @@ export class CheckPasswordGuard implements CanActivate {
     )
 
     if (!passwordValid) {
-      throw new InvalidCredentialUnauthorizedError()
+      throw new UnauthorizedException('invalid credentials')
     }
 
     return
@@ -65,14 +65,14 @@ export class CheckPasswordGuard implements CanActivate {
         !req.user.sign.sub || !req.body.password
 
       if (validateCredential) {
-        throw new InvalidCredentialUnauthorizedError()
+        throw new UnauthorizedException('invalid credentials')
       }
 
       return { sub: req.user.sign.sub, password: req.body.password }
     } catch (err) {
       Logger.error(err)
 
-      throw new InvalidCredentialUnauthorizedError()
+      throw new UnauthorizedException('invalid credentials')
     }
   }
 }

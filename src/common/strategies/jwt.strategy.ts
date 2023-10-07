@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { PassportStrategy } from '@nestjs/passport/dist/passport/passport.strategy'
 import 'dotenv/config'
 import { ExtractJwt, Strategy } from 'passport-jwt'
-import { IPayload } from '../../../modules/auth/interfaces/payload.interface'
+import { IPayload } from '../../modules/auth/interfaces/payload.interface'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-all') {

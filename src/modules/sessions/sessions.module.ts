@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common/decorators/modules/module.decorator'
-import { PrismaModule } from '../../recipes/prisma/prisma.module'
-import { RedisModule } from '../../recipes/redis/redis.module'
+import { PrismaModule } from '../../config/prisma/prisma.module'
+import { RedisModule } from '../../config/redis/redis.module'
 import { UsersModule } from '../users/users.module'
 import { SessionsPrismaRepository } from './repositories/prisma/sessions.prisma.repository'
 import { SessionsRedisRepository } from './repositories/redis/sessions.redis.repository'

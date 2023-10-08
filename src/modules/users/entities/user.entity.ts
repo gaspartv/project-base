@@ -4,6 +4,7 @@ import { HashProvider } from '../../../providers/hashing/hash.provider'
 import { SessionEntity } from '../../sessions/entities/session.entity'
 
 class User {
+  id?: string
   disabledAt?: Date | null
   deletedAt?: Date | null
   updatedAt?: Date
@@ -24,7 +25,7 @@ class User {
 
 export class UserEntity {
   constructor(user: User) {
-    this.id = randomUUID()
+    this.id = user.id || randomUUID()
     this.createdAt = new Date()
     this.updatedAt = user.updatedAt || new Date()
     this.disabledAt = user.disabledAt || null

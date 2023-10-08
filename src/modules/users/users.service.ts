@@ -174,7 +174,9 @@ export class UsersService {
 
     if (!userFound) throw new NotFoundException('user not found')
 
-    const imageUri: string = await GeneratorFile.uri(file)
+    if (userFound.imageUri) GeneratorFile.remove(userFound.imageUri)
+
+    const imageUri: string = await GeneratorFile.save(file)
 
     const entity: UserEntity = new UserEntity({
       ...userFound,
@@ -267,7 +269,7 @@ export class UsersService {
     const { confirmNewPassword, newPassword } = dto
 
     if (newPassword !== confirmNewPassword) {
-      throw new ConflictException('New Passwords do not match')
+      throw new ConflictException('new password do not match')
     }
 
     const passToken = await this.passTokenRepository.findOneWhere({
@@ -290,7 +292,15 @@ export class UsersService {
 
     const userId: string = passToken.userId
 
-    const userFound: UserResponseEntity = await this.userOrThrow(userId)
+    const userFound: UserResponseEntity = await this.repository.findOneWhere({
+      id: userId,
+      disabledAt: null,
+      deletedAt: null
+    })
+
+    if (!userFound) {
+      throw new NotFoundException('user not found')
+    }
 
     HashProvider.passwordIsMatch(newPassword, userFound.passwordHash)
 
@@ -344,16 +354,6 @@ export class UsersService {
   }
 
   /// EXTRA ///
-  private async userOrThrow(id: string): Promise<UserResponseEntity> {
-    const user = await this.repository.findOne(id)
-
-    if (!user) {
-      throw new NotFoundException('user not found')
-    }
-
-    return user
-  }
-
   private async verifyUniqueFieldToCreated(
     dto: UserVerifyUniqueFieldDto
   ): Promise<void> {

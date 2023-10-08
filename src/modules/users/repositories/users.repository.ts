@@ -25,6 +25,5 @@ export abstract class UsersRepository {
     dto: UserVerifyUniqueFieldDto
   ): Promise<UserVerifyUniqueFieldDto>
 
-  ///////////////////////////////////////////////////
   abstract findOneByLogin(login: string): Promise<UserResponseEntity>
 }

@@ -120,7 +120,6 @@ export class UsersPrismaRepository implements UsersRepository {
     })
   }
 
-  ///////////////////////////////////////////////
   async findOneByLogin(login: string): Promise<UserResponseEntity> {
     return await this.prisma.user.findFirst({
       where: {

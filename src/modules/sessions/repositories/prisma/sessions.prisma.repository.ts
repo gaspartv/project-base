@@ -33,7 +33,7 @@ export class SessionsPrismaRepository implements SessionsRepository {
     })
   }
 
-  async findOne(id: string): Promise<SessionResponseEntity> {
+  async findOneUnique(id: string): Promise<SessionResponseEntity> {
     return await this.prisma.session.findUnique({
       where: { id },
       include: this.include

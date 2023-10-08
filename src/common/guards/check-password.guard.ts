@@ -6,14 +6,14 @@ import { Logger } from '@nestjs/common/services/logger.service'
 import { Reflector } from '@nestjs/core/services/reflector.service'
 import { compare } from 'bcryptjs'
 import { UserEntity } from '../../modules/users/entities/user.entity'
-import { UsersService } from '../../modules/users/users.service'
+import { UsersRepository } from '../../modules/users/repositories/users.repository'
 import { IS_PASSWORD_CHECK_REQUIRED } from '../decorators/custom/check-password.decorator'
 
 @Injectable()
 export class CheckPasswordGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    private readonly usersService: UsersService
+    private readonly usersRepository: UsersRepository
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -38,7 +38,7 @@ export class CheckPasswordGuard implements CanActivate {
     data: { sub: string; password: string },
     url: string
   ): Promise<void> {
-    const user: UserEntity = await this.usersService.findOneWhere({
+    const user: UserEntity = await this.usersRepository.findOneWhere({
       deletedAt: null,
       disabledAt: url.includes('users/enable') ? undefined : null
     })

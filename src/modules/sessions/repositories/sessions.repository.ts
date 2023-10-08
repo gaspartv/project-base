@@ -11,7 +11,7 @@ export abstract class SessionsRepository {
     entity: SessionEntity
   ): Promise<SessionResponseEntity>
 
-  abstract findOne(id: string): Promise<SessionResponseEntity>
+  abstract findOneUnique(id: string): Promise<SessionResponseEntity>
 
   abstract disconnectedMany(userId: string): Promise<{ count: number }>
 }

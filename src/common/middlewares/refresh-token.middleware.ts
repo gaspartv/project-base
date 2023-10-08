@@ -9,7 +9,7 @@ import {
 } from '../../modules/sessions/entities/session.entity'
 import { SessionsRepository } from '../../modules/sessions/repositories/sessions.repository'
 import { UserEntity } from '../../modules/users/entities/user.entity'
-import { UsersService } from '../../modules/users/users.service'
+import { UsersRepository } from '../../modules/users/repositories/users.repository'
 import { IJwtPayload } from '../interfaces/jwt-payload.interface'
 import { IRequest } from '../interfaces/request.interface'
 import { GeneratorDate } from '../utils/generator-date'
@@ -18,7 +18,7 @@ import { GeneratorDate } from '../utils/generator-date'
 export class RefreshTokenMiddleware implements NestMiddleware {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly usersService: UsersService,
+    private readonly usersRepository: UsersRepository,
     private readonly sessionsRepository: SessionsRepository
   ) {}
 
@@ -48,7 +48,7 @@ export class RefreshTokenMiddleware implements NestMiddleware {
 
       const userId: string = decoded.sign.sub
 
-      const user: UserEntity = await this.usersService.findOneWhere({
+      const user: UserEntity = await this.usersRepository.findOneWhere({
         id: userId,
         deletedAt: null,
         disabledAt: null
@@ -59,7 +59,7 @@ export class RefreshTokenMiddleware implements NestMiddleware {
       }
 
       const session: SessionResponseEntity =
-        await this.sessionsRepository.findOne(userId)
+        await this.sessionsRepository.findOneUnique(userId)
 
       const sessionValidate: boolean =
         !session ||

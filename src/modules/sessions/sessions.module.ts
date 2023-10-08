@@ -1,19 +1,13 @@
 import { Module } from '@nestjs/common/decorators/modules/module.decorator'
 import { PrismaModule } from '../../config/prisma/prisma.module'
-import { RedisModule } from '../../config/redis/redis.module'
-import { UsersModule } from '../users/users.module'
 import { SessionsPrismaRepository } from './repositories/prisma/sessions.prisma.repository'
-import { SessionsRedisRepository } from './repositories/redis/sessions.redis.repository'
 import { SessionsRepository } from './repositories/sessions.repository'
-import { SessionsService } from './sessions.service'
 
 @Module({
-  imports: [UsersModule, PrismaModule, RedisModule],
+  imports: [PrismaModule],
   providers: [
-    SessionsService,
-    SessionsPrismaRepository,
-    { provide: SessionsRepository, useClass: SessionsRedisRepository }
+    { provide: SessionsRepository, useClass: SessionsPrismaRepository }
   ],
-  exports: [SessionsService, SessionsRepository]
+  exports: [SessionsRepository]
 })
 export class SessionsModule {}

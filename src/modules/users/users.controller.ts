@@ -28,30 +28,30 @@ import { UserUpdateSettingsDto } from './dto/request/update-user-settings.dto'
 import { UserUpdateDto } from './dto/request/update-user.dto'
 import { UserPaginationResponseDto } from './dto/response/response-pagination-user.dto'
 import { UserResponseDto } from './dto/response/response-user.dto'
-import { UsersUseCase } from './users.use-case'
+import { UsersService } from './users.service'
 
 @ApiTags('User')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly useCase: UsersUseCase) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @IsPublic()
   @Post()
   @HttpCode(201)
   create(@Body() dto: UserCreateDto): Promise<UserResponseDto> {
-    return this.useCase.create(dto)
+    return this.usersService.create(dto)
   }
 
   @Get(':id')
   @HttpCode(200)
   findOne(@Param('id', ParseUuidPipe) id: string): Promise<UserResponseDto> {
-    return this.useCase.findOne(id)
+    return this.usersService.findOne(id)
   }
 
   @Get('/profile')
   @HttpCode(200)
   findProfile(@Sign() sign: ISign): Promise<UserResponseDto> {
-    return this.useCase.findOne(sign.sub)
+    return this.usersService.findOne(sign.sub)
   }
 
   @Get()
@@ -59,7 +59,7 @@ export class UsersController {
   findMany(
     @Query() pagination: UserPaginationDto
   ): Promise<UserPaginationResponseDto> {
-    return this.useCase.findMany(pagination)
+    return this.usersService.findMany(pagination)
   }
 
   @Patch(':id')
@@ -68,7 +68,7 @@ export class UsersController {
     @Param('id', ParseUuidPipe) id: string,
     @Body() dto: UserUpdateDto
   ): Promise<UserResponseDto> {
-    return this.useCase.update(id, dto)
+    return this.usersService.update(id, dto)
   }
 
   @Patch(':id/photo')
@@ -77,7 +77,7 @@ export class UsersController {
     @Body() dto: MessageCreateFileDto,
     @Param('id', ParseUuidPipe) id: string
   ): Promise<UserResponseDto> {
-    return this.useCase.updatePhoto(id, dto.file)
+    return this.usersService.updatePhoto(id, dto.file)
   }
 
   @Patch(':id/police')
@@ -86,7 +86,7 @@ export class UsersController {
     @Body() dto: UserUpdatePoliceDto,
     @Param('id', ParseUuidPipe) id: string
   ): Promise<UserResponseDto> {
-    return this.useCase.updatePolice(dto, id)
+    return this.usersService.updatePolice(dto, id)
   }
 
   @Patch(':id/email')
@@ -95,7 +95,7 @@ export class UsersController {
     @Body() dto: UserUpdateEmailDto,
     @Param('id', ParseUuidPipe) id: string
   ): Promise<UserResponseDto> {
-    return this.useCase.updateEmail(dto, id)
+    return this.usersService.updateEmail(dto, id)
   }
 
   @Patch(':id/settings')
@@ -104,25 +104,25 @@ export class UsersController {
     @Body() dto: UserUpdateSettingsDto,
     @Param('id', ParseUuidPipe) id: string
   ) {
-    return this.useCase.updateSettings(dto, id)
+    return this.usersService.updateSettings(dto, id)
   }
 
   @Patch(':id/disable')
   @HttpCode(200)
   disable(@Param('id', ParseUuidPipe) id: string): Promise<UserResponseDto> {
-    return this.useCase.disable(id)
+    return this.usersService.disable(id)
   }
 
   @Patch(':id/enable')
   @HttpCode(200)
   enable(@Param('id', ParseUuidPipe) id: string): Promise<UserResponseDto> {
-    return this.useCase.enable(id)
+    return this.usersService.enable(id)
   }
 
   @Patch(':id/delete')
   @HttpCode(204)
   delete(@Param('id', ParseUuidPipe) id: string): Promise<MessageDto> {
-    return this.useCase.delete(id)
+    return this.usersService.delete(id)
   }
 
   @IsPublic()
@@ -132,13 +132,13 @@ export class UsersController {
     @Param('passTokenId', ParseUUIDPipe) passTokenId: string,
     @Body() dto: UserUpdatePassResetDto
   ): Promise<MessageDto> {
-    return this.useCase.resetPass(passTokenId, dto)
+    return this.usersService.resetPass(passTokenId, dto)
   }
 
   @IsPublic()
   @Patch('password/recovery')
   @HttpCode(204)
   recoveryPass(@Body() { email }: UserUpdatePassRecoveryDto) {
-    return this.useCase.recoveryPass(email)
+    return this.usersService.recoveryPass(email)
   }
 }

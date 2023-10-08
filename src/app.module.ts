@@ -1,12 +1,11 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  ValidationPipe
-} from '@nestjs/common'
+import { Module } from '@nestjs/common/decorators/modules/module.decorator'
+import { MiddlewareConsumer } from '@nestjs/common/interfaces/middleware/middleware-consumer.interface'
+import { NestModule } from '@nestjs/common/interfaces/modules/nest-module.interface'
+import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe'
 import { ConfigModule } from '@nestjs/config'
 import { APP_GUARD, APP_PIPE } from '@nestjs/core'
-import { JwtService } from '@nestjs/jwt'
+import { JwtModule, JwtService } from '@nestjs/jwt'
+import { PassportModule } from '@nestjs/passport'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { join } from 'path'
@@ -18,12 +17,17 @@ import { PrismaModule } from './config/prisma/prisma.module'
 import { RedisModule } from './config/redis/redis.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { PassTokensModule } from './modules/pass-tokens/pass-tokens.module'
-import { PassTokensService } from './modules/pass-tokens/pass-tokens.service'
 import { SessionsModule } from './modules/sessions/sessions.module'
 import { UsersModule } from './modules/users/users.module'
 
 @Module({
   imports: [
+    PassportModule.register({ defaultStrategy: 'jwt-all' }),
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN }
+    }),
     ThrottlerModule.forRoot([
       { name: 'short', ttl: 1000, limit: 3 },
       { name: 'medium', ttl: 10000, limit: 20 },
@@ -36,6 +40,7 @@ import { UsersModule } from './modules/users/users.module'
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'tmp')
     }),
+
     PrismaModule,
     RedisModule,
     AuthModule,
@@ -44,7 +49,6 @@ import { UsersModule } from './modules/users/users.module'
     PassTokensModule
   ],
   providers: [
-    PassTokensService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtGuard },
     { provide: APP_GUARD, useClass: CheckPasswordGuard },

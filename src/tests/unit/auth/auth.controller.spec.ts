@@ -1,6 +1,7 @@
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
-import { Test, TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing/test'
+import { TestingModule } from '@nestjs/testing/testing-module'
 import { PrismaModule } from '../../../config/prisma/prisma.module'
 import { AuthController } from '../../../modules/auth/auth.controller'
 import { AuthService } from '../../../modules/auth/auth.service'

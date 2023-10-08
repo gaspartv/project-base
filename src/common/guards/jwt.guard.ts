@@ -1,9 +1,7 @@
-import {
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException
-} from '@nestjs/common'
-import { Reflector } from '@nestjs/core'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception'
+import { ExecutionContext } from '@nestjs/common/interfaces/features/execution-context.interface'
+import { Reflector } from '@nestjs/core/services/reflector.service'
 import { AuthGuard } from '@nestjs/passport'
 import { IS_PUBLIC_KEY } from '../decorators/custom/is-public.decorator'
 
@@ -36,7 +34,7 @@ export class JwtGuard extends AuthGuard('jwt-all') {
         throw new UnauthorizedException(error.message)
       }
 
-      throw new UnauthorizedException('You dont have permission to access.')
+      throw new UnauthorizedException('you dont have permission to access')
     })
   }
 }

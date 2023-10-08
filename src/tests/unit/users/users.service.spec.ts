@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
-import { Test, TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing/test'
+import { TestingModule } from '@nestjs/testing/testing-module'
 import { UserCreateDto } from '../../../modules/users/dto/request/create-user.dto'
 import { UserResponseEntity } from '../../../modules/users/entities/user.entity'
 import { UsersFakeRepository } from '../../../modules/users/repositories/fake/users.fake.repository'

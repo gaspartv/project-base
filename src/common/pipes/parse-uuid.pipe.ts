@@ -1,4 +1,6 @@
-import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception'
+import { PipeTransform } from '@nestjs/common/interfaces/features/pipe-transform.interface'
 import { validate as uuidValidate, version as uuidVersion } from 'uuid'
 
 @Injectable()

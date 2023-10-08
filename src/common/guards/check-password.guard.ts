@@ -1,11 +1,9 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  Logger,
-  UnauthorizedException
-} from '@nestjs/common'
-import { Reflector } from '@nestjs/core'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception'
+import { CanActivate } from '@nestjs/common/interfaces/features/can-activate.interface'
+import { ExecutionContext } from '@nestjs/common/interfaces/features/execution-context.interface'
+import { Logger } from '@nestjs/common/services/logger.service'
+import { Reflector } from '@nestjs/core/services/reflector.service'
 import { compare } from 'bcryptjs'
 import { UserEntity } from '../../modules/users/entities/user.entity'
 import { UsersService } from '../../modules/users/users.service'

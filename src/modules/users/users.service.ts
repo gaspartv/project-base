@@ -1,8 +1,6 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException
-} from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { ConflictException } from '@nestjs/common/exceptions/conflict.exception'
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception'
 import { randomUUID } from 'crypto'
 import { GeneratorFile } from '../../common/utils/generator-file'
 import { HashProvider } from '../../providers/hashing/hash.provider'
@@ -44,7 +42,7 @@ export class UsersService {
   }
 
   async findOneForAuth(login: string): Promise<UserResponseEntity> {
-    const user = await this.repository.findOneForAuth(login)
+    const user = await this.repository.findOneByLogin(login)
 
     if (!user) {
       throw new NotFoundException('user not found')

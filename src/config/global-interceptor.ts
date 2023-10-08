@@ -1,10 +1,10 @@
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { HttpArgumentsHost } from '@nestjs/common/interfaces/features/arguments-host.interface'
+import { ExecutionContext } from '@nestjs/common/interfaces/features/execution-context.interface'
 import {
   CallHandler,
-  ExecutionContext,
-  Injectable,
   NestInterceptor
-} from '@nestjs/common'
-import { HttpArgumentsHost } from '@nestjs/common/interfaces'
+} from '@nestjs/common/interfaces/features/nest-interceptor.interface'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { Observable, map } from 'rxjs'
 

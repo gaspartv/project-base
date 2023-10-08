@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing/test'
+import { TestingModule } from '@nestjs/testing/testing-module'
 import { randomUUID } from 'crypto'
 import { SessionCreateDto } from '../../../modules/sessions/dto/create-session.dto'
 import { SessionsFakeRepository } from '../../../modules/sessions/repositories/fake/sessions.fake.repository'

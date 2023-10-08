@@ -1,6 +1,6 @@
-import { Logger } from '@nestjs/common'
+import { Logger } from '@nestjs/common/services/logger.service'
 import 'dotenv/config'
-import * as nodemailer from 'nodemailer'
+import { createTransport } from 'nodemailer'
 import { EmailCreateUserDto } from './dto/request/email-create-user.dto'
 import { EmailSendDto } from './dto/request/email-send.dto'
 import { EmailGenerate } from './email.template'
@@ -29,7 +29,7 @@ export class EmailProvider {
     const host = process.env.SMTP_HOST
     const port = Number(process.env.SMTP_PORT)
 
-    const transporter = nodemailer.createTransport({
+    const transporter = createTransport({
       host,
       port,
       auth: { user, pass }

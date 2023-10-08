@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception'
 import { EUserPolice } from '@prisma/client'
 import { randomUUID } from 'crypto'
 import { UserPaginationDto } from '../../dto/request/pagination-user.dto'
@@ -9,7 +10,7 @@ import { UsersRepository } from '../users.repository'
 
 @Injectable()
 export class UsersFakeRepository implements UsersRepository {
-  findOneForAuth(login: string): Promise<UserResponseEntity> {
+  findOneByLogin(login: string): Promise<UserResponseEntity> {
     throw new Error('Method not implemented.')
   }
   users: UserResponseEntity[] = []

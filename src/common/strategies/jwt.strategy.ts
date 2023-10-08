@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { PassportStrategy } from '@nestjs/passport'
 import 'dotenv/config'
 import { ExtractJwt, Strategy } from 'passport-jwt'

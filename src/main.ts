@@ -1,11 +1,11 @@
 import fastifyCookie from '@fastify/cookie'
 import helmet from '@fastify/helmet'
-import { Logger, NestInterceptor, ValidationPipe } from '@nestjs/common'
-import { NestFactory } from '@nestjs/core'
-import {
-  FastifyAdapter,
-  NestFastifyApplication
-} from '@nestjs/platform-fastify'
+import { ValidationPipe } from '@nestjs/common'
+import { NestInterceptor } from '@nestjs/common/interfaces/features/nest-interceptor.interface'
+import { Logger } from '@nestjs/common/services/logger.service'
+import { NestFactory } from '@nestjs/core/nest-factory'
+import { FastifyAdapter } from '@nestjs/platform-fastify/adapters/fastify-adapter'
+import { NestFastifyApplication } from '@nestjs/platform-fastify/interfaces/nest-fastify-application.interface'
 import fileUpload from 'fastify-file-upload'
 import { AppModule } from './app.module'
 import { TransformationInterceptor } from './config/global-interceptor'

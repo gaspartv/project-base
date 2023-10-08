@@ -1,8 +1,6 @@
-import {
-  Injectable,
-  NestMiddleware,
-  UnauthorizedException
-} from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception'
+import { NestMiddleware } from '@nestjs/common/interfaces/middleware/nest-middleware.interface'
 import { JwtService } from '@nestjs/jwt'
 import { FastifyReply } from 'fastify'
 import {

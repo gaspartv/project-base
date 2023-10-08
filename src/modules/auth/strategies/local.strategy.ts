@@ -17,7 +17,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local-auth') {
 
   async validate(login: string, password: string): Promise<UserEntity> {
     const user: UserResponseEntity =
-      await this.usersRepository.findOneForAuth(login)
+      await this.usersRepository.findOneByLogin(login)
 
     if (!user) throw new UnauthorizedException('login unauthorized')
 

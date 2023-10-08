@@ -1,10 +1,10 @@
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception'
 import {
   ArgumentMetadata,
-  BadRequestException,
-  Injectable,
-  ParseIntPipe,
   PipeTransform
-} from '@nestjs/common'
+} from '@nestjs/common/interfaces/features/pipe-transform.interface'
+import { ParseIntPipe } from '@nestjs/common/pipes/parse-int.pipe'
 
 @Injectable()
 export class OptionalParseIntPipe

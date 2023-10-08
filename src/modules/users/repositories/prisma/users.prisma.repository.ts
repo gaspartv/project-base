@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { Prisma } from '@prisma/client'
 import { BooleanQuery } from '../../../../common/enum/boolean-query.enum'
 import { PrismaService } from '../../../../config/prisma/prisma.service'
@@ -120,7 +120,8 @@ export class UsersPrismaRepository implements UsersRepository {
     })
   }
 
-  async findOneForAuth(login: string): Promise<UserResponseEntity> {
+  ///////////////////////////////////////////////
+  async findOneByLogin(login: string): Promise<UserResponseEntity> {
     return await this.prisma.user.findFirst({
       where: {
         OR: [

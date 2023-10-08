@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { MessageDto } from '../../common/dto/message.dto'
 import { PaginationUtil } from '../../common/pagination/pagination.util'
 import { UserCreateDto } from './dto/request/create-user.dto'

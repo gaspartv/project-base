@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { RedisService } from '../../../../config/redis/redis.service'
 import { UserPaginationDto } from '../../dto/request/pagination-user.dto'
 import { UserVerifyUniqueFieldDto } from '../../dto/verify-unique-field.dto'
@@ -13,9 +13,6 @@ export class UsersRedisRepository implements UsersRepository {
     private readonly redis: RedisService,
     private readonly prisma: UsersPrismaRepository
   ) {}
-  async findOneForAuth(login: string): Promise<UserResponseEntity> {
-    return await this.prisma.findOneForAuth(login)
-  }
 
   private prefixEntity: string = 'user:'
   private prefixEntities: string = 'users:'
@@ -133,5 +130,10 @@ export class UsersRedisRepository implements UsersRepository {
     await this.redis.set(key, value, 'EX', 86400)
 
     return Number(value)
+  }
+
+  ////////////////////////////////////////////////
+  async findOneByLogin(login: string): Promise<UserResponseEntity> {
+    return await this.prisma.findOneByLogin(login)
   }
 }

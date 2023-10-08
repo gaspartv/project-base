@@ -1,5 +1,6 @@
 import { JwtService } from '@nestjs/jwt'
-import { Test, TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing/test'
+import { TestingModule } from '@nestjs/testing/testing-module'
 import { AuthService } from '../../../modules/auth/auth.service'
 import { SessionsFakeRepository } from '../../../modules/sessions/repositories/fake/sessions.fake.repository'
 import { SessionsRepository } from '../../../modules/sessions/repositories/sessions.repository'

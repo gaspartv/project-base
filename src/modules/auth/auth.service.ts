@@ -19,6 +19,8 @@ export class AuthService {
   ) {}
 
   async login(user: UserResponseEntity): Promise<ResponseLoginDto> {
+    await this.sessionsRepository.disconnectedMany(user.id)
+
     const expiresAt: Date = GeneratorDate.expiresAt()
 
     const entity: SessionEntity = new SessionEntity({
@@ -26,8 +28,6 @@ export class AuthService {
       expiresAt,
       tokens: []
     })
-
-    await this.sessionsRepository.disconnectedMany(user.id)
 
     const session: SessionResponseEntity =
       await this.sessionsRepository.create(entity)

@@ -59,7 +59,7 @@ export class RefreshTokenMiddleware implements NestMiddleware {
       }
 
       const session: SessionResponseEntity =
-        await this.sessionsRepository.findOneUnique(userId)
+        await this.sessionsRepository.findOneByUser(userId)
 
       const sessionValidate: boolean =
         !session ||

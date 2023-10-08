@@ -22,6 +22,7 @@ import { UserUpdateSettingsDto } from './dto/request/update-user-settings.dto'
 import { UserUpdateDto } from './dto/request/update-user.dto'
 import { UserPaginationResponseDto } from './dto/response/response-pagination-user.dto'
 import { UserResponseDto } from './dto/response/response-user.dto'
+import { UserVerifyUniqueFieldUpdateDto } from './dto/verify-unique-field-update.dto'
 import { UserVerifyUniqueFieldDto } from './dto/verify-unique-field.dto'
 import { UserEntity, UserResponseEntity } from './entities/user.entity'
 import { UsersRepository } from './repositories/users.repository'
@@ -34,9 +35,7 @@ export class UsersService {
   ) {}
 
   async create(dto: UserCreateDto): Promise<UserResponseDto> {
-    const { email, phone } = dto
-
-    await this.verifyUniqueFieldToCreated(email, phone)
+    await this.verifyUniqueFieldToCreated(dto)
 
     const password: string = randomUUID().toString()
 
@@ -45,15 +44,23 @@ export class UsersService {
       password
     })
 
-    const userCreate = await this.repository.create(entity)
+    const userCreate: UserResponseEntity = await this.repository.create(entity)
 
     return UserResponseDto.handle(userCreate)
   }
 
   async findOne(id: string): Promise<UserResponseDto> {
-    const userFind: UserResponseEntity = await this.userOrThrow(id)
+    const userFound: UserResponseEntity = await this.repository.findOneWhere({
+      id,
+      deletedAt: null,
+      disabledAt: null
+    })
 
-    return UserResponseDto.handle(userFind)
+    if (!userFound) {
+      throw new NotFoundException('user not found')
+    }
+
+    return UserResponseDto.handle(userFound)
   }
 
   async findMany(
@@ -66,8 +73,7 @@ export class UsersService {
     return PaginationUtil.result(
       users.map((user) => ({
         ...UserResponseDto.handle(user),
-        settings: undefined,
-        Session: undefined
+        settings: undefined
       })),
       options,
       count
@@ -76,7 +82,8 @@ export class UsersService {
 
   async enable(id: string): Promise<UserResponseDto> {
     const userFound: UserResponseEntity = await this.repository.findOneWhere({
-      id
+      id,
+      deletedAt: null
     })
 
     if (!userFound) throw new NotFoundException('user not found')
@@ -92,7 +99,13 @@ export class UsersService {
   }
 
   async disable(id: string): Promise<UserResponseDto> {
-    const userFound: UserResponseEntity = await this.userOrThrow(id)
+    const userFound: UserResponseEntity = await this.repository.findOneWhere({
+      id,
+      deletedAt: null,
+      disabledAt: null
+    })
+
+    if (!userFound) throw new NotFoundException('user not found')
 
     const entity = new UserEntity({
       ...userFound,
@@ -105,7 +118,12 @@ export class UsersService {
   }
 
   async delete(id: string): Promise<MessageDto> {
-    const userFound: UserResponseEntity = await this.userOrThrow(id)
+    const userFound: UserResponseEntity = await this.repository.findOneWhere({
+      id,
+      deletedAt: null
+    })
+
+    if (!userFound) throw new NotFoundException('user not found')
 
     const entity = new UserEntity({
       ...userFound,
@@ -119,9 +137,19 @@ export class UsersService {
   }
 
   async update(id: string, dto: UserUpdateDto): Promise<UserResponseDto> {
-    const userFound: UserResponseEntity = await this.userOrThrow(id)
+    const userFound: UserResponseEntity = await this.repository.findOneWhere({
+      id,
+      deletedAt: null,
+      disabledAt: null
+    })
 
-    await this.verifyUniqueFieldToUpdate(id, userFound.email, dto.phone)
+    if (!userFound) throw new NotFoundException('user not found')
+
+    await this.verifyUniqueFieldToUpdate(id, {
+      phone: dto.phone,
+      login: dto.login,
+      cpf: dto.cpf
+    })
 
     const entity: UserEntity = new UserEntity({
       ...userFound,
@@ -138,7 +166,13 @@ export class UsersService {
     id: string,
     file: MessageFileDto
   ): Promise<UserResponseDto> {
-    const userFound: UserResponseEntity = await this.userOrThrow(id)
+    const userFound: UserResponseEntity = await this.repository.findOneWhere({
+      id,
+      deletedAt: null,
+      disabledAt: null
+    })
+
+    if (!userFound) throw new NotFoundException('user not found')
 
     const imageUri: string = await GeneratorFile.uri(file)
 
@@ -157,7 +191,13 @@ export class UsersService {
     dto: UserUpdatePoliceDto,
     id: string
   ): Promise<UserResponseDto> {
-    const userFound: UserResponseEntity = await this.userOrThrow(id)
+    const userFound: UserResponseEntity = await this.repository.findOneWhere({
+      id,
+      deletedAt: null,
+      disabledAt: null
+    })
+
+    if (!userFound) throw new NotFoundException('user not found')
 
     const entity: UserEntity = new UserEntity({
       ...userFound,
@@ -174,9 +214,17 @@ export class UsersService {
     dto: UserUpdateEmailDto,
     id: string
   ): Promise<UserResponseDto> {
-    const userFound: UserResponseEntity = await this.userOrThrow(id)
+    const userFound: UserResponseEntity = await this.repository.findOneWhere({
+      id,
+      deletedAt: null,
+      disabledAt: null
+    })
 
-    await this.verifyUniqueFieldToUpdate(id, dto.email, userFound.phone)
+    if (!userFound) throw new NotFoundException('user not found')
+
+    await this.verifyUniqueFieldToUpdate(id, {
+      email: dto.email
+    })
 
     const entity: UserEntity = new UserEntity({
       ...userFound,
@@ -193,7 +241,13 @@ export class UsersService {
     dto: UserUpdateSettingsDto,
     id: string
   ): Promise<UserResponseDto> {
-    const userFound: UserResponseEntity = await this.userOrThrow(id)
+    const userFound: UserResponseEntity = await this.repository.findOneWhere({
+      id,
+      deletedAt: null,
+      disabledAt: null
+    })
+
+    if (!userFound) throw new NotFoundException('user not found')
 
     const entity: UserEntity = new UserEntity({
       ...userFound,
@@ -301,14 +355,17 @@ export class UsersService {
   }
 
   private async verifyUniqueFieldToCreated(
-    email: string,
-    phone: string
+    dto: UserVerifyUniqueFieldDto
   ): Promise<void> {
+    const { cpf, email, login, phone } = dto
+
     const exceptions: string[] = []
 
     const uniqueFields: UserVerifyUniqueFieldDto = {
-      email: email,
-      phone: phone
+      email,
+      phone,
+      login,
+      cpf
     }
 
     const verifyUniqueKey: UserVerifyUniqueFieldDto =
@@ -322,6 +379,14 @@ export class UsersService {
       if (verifyUniqueKey.phone === phone) {
         exceptions.push('phone already exists')
       }
+
+      if (verifyUniqueKey.login === login) {
+        exceptions.push('login already exists')
+      }
+
+      if (verifyUniqueKey.cpf === cpf) {
+        exceptions.push('cpf already exists')
+      }
     }
 
     if (exceptions.length > 0) {
@@ -333,14 +398,17 @@ export class UsersService {
 
   private async verifyUniqueFieldToUpdate(
     id: string,
-    email: string,
-    phone: string
+    dto: UserVerifyUniqueFieldUpdateDto
   ): Promise<void> {
+    const { cpf, email, login, phone } = dto
+
     const exceptions: string[] = []
 
-    const uniqueFields: UserVerifyUniqueFieldDto = {
+    const uniqueFields: UserVerifyUniqueFieldUpdateDto = {
       email: email || undefined,
-      phone: phone || undefined
+      phone: phone || undefined,
+      login: login || undefined,
+      cpf: cpf || undefined
     }
 
     const verifyUniqueKey: UserVerifyUniqueFieldDto =
@@ -353,6 +421,14 @@ export class UsersService {
 
       if (verifyUniqueKey.phone === phone) {
         exceptions.push('phone already exists')
+      }
+
+      if (verifyUniqueKey.login === login) {
+        exceptions.push('login already exists')
+      }
+
+      if (verifyUniqueKey.cpf === cpf) {
+        exceptions.push('cpf already exists')
       }
     }
 

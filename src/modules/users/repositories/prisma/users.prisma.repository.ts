@@ -42,8 +42,15 @@ export class UsersPrismaRepository implements UsersRepository {
     dto: UserVerifyUniqueFieldDto
   ): Promise<UserVerifyUniqueFieldDto> {
     return await this.prisma.user.findFirst({
-      where: { OR: [{ email: dto.email }, { phone: dto.phone }] },
-      select: { email: true, phone: true }
+      where: {
+        OR: [
+          { email: dto.email },
+          { phone: dto.phone },
+          { login: dto.login },
+          { cpf: dto.cpf }
+        ]
+      },
+      select: { email: true, phone: true, login: true, cpf: true }
     })
   }
 
@@ -55,10 +62,12 @@ export class UsersPrismaRepository implements UsersRepository {
       where: {
         OR: [
           { id: { not: id }, email: dto.email },
-          { id: { not: id }, phone: dto.phone }
+          { id: { not: id }, phone: dto.phone },
+          { id: { not: id }, login: dto.login },
+          { id: { not: id }, cpf: dto.cpf }
         ]
       },
-      select: { email: true, phone: true }
+      select: { email: true, phone: true, login: true, cpf: true }
     })
   }
 

@@ -40,6 +40,13 @@ export class SessionsPrismaRepository implements SessionsRepository {
     })
   }
 
+  async findOneByUser(userId: string): Promise<SessionResponseEntity> {
+    return await this.prisma.session.findFirst({
+      where: { userId, disconnectedAt: null },
+      include: this.include
+    })
+  }
+
   async disconnectedMany(userId: string): Promise<{ count: number }> {
     return await this.prisma.session.updateMany({
       where: {

@@ -1,4 +1,5 @@
 import { UserPaginationDto } from '../dto/request/pagination-user.dto'
+import { UserVerifyUniqueFieldUpdateDto } from '../dto/verify-unique-field-update.dto'
 import { UserVerifyUniqueFieldDto } from '../dto/verify-unique-field.dto'
 import { UserWhereDto } from '../dto/where-user.dto'
 import { UserEntity, UserResponseEntity } from '../entities/user.entity'
@@ -22,7 +23,7 @@ export abstract class UsersRepository {
 
   abstract verifyUniqueFieldToUpdate(
     id: string,
-    dto: UserVerifyUniqueFieldDto
+    dto: UserVerifyUniqueFieldUpdateDto
   ): Promise<UserVerifyUniqueFieldDto>
 
   abstract findOneByLogin(login: string): Promise<UserResponseEntity>

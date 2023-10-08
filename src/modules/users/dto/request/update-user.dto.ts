@@ -17,8 +17,17 @@ export class UserUpdateDto {
   @MaxLength(100)
   lastName: string
 
+  @IsString()
+  @IsOptional()
+  login: string
+
   @IsPhoneNumber('BR')
+  @IsOptional()
   phone: string
+
+  @IsString()
+  @IsOptional()
+  cpf: string
 
   @IsString()
   @IsOptional()

@@ -27,6 +27,8 @@ export const userCreateMock: UserCreateDto = {
   language: ELanguage.PT_BR,
   darkMode: false,
   phone: '5532998274714',
+  login: 'gaspar_text',
+  cpf: '12345678901',
   description: 'Tibia-Info'
 }
 
@@ -37,5 +39,7 @@ export const userCreateToUpdateMock: UserCreateDto = {
   language: ELanguage.PT_BR,
   darkMode: false,
   phone: '5532998274714',
+  login: 'gaspar_text',
+  cpf: '12345678901',
   description: 'Tibia-Info'
 }

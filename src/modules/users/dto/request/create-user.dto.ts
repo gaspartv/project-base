@@ -24,8 +24,14 @@ export class UserCreateDto {
   @IsEmail()
   email: string
 
+  @IsString()
+  login: string
+
   @IsPhoneNumber('BR')
   phone: string
+
+  @IsString()
+  cpf: string
 
   @IsString()
   @IsOptional()

@@ -31,6 +31,8 @@ describe('UsersService', () => {
       description: faker.person.bio(),
       phone: faker.phone.number('###########'),
       email: faker.internet.email(),
+      login: 'gaspar_text',
+      cpf: '12345678901',
       darkMode: true,
       language: 'PT_BR'
     }
@@ -72,6 +74,8 @@ describe('UsersService', () => {
       description: faker.person.bio(),
       phone: faker.phone.number('###########'),
       email: faker.internet.email(),
+      login: 'gaspar_text',
+      cpf: '12345678901',
       darkMode: true,
       language: 'PT_BR'
     }

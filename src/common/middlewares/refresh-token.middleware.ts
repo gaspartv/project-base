@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { FastifyReply } from 'fastify'
-import { IPayload } from '../../modules/auth/interfaces/payload.interface'
+import { IJwtPayload } from '../../modules/auth/interfaces/payload.interface'
 import { IRequest } from '../../modules/auth/interfaces/request.interface'
 import {
   SessionEntity,
@@ -79,7 +79,7 @@ export class RefreshTokenMiddleware implements NestMiddleware {
       if (validateDate) {
         const expiresAt: Date = GeneratorDate.expiresAt()
 
-        const payload: IPayload = {
+        const payload: IJwtPayload = {
           sign: {
             sub: session.userId,
             sessionId: session.id

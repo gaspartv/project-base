@@ -1,6 +1,24 @@
-import { UserEntity } from '../../users/entities/user.entity'
+import { UserResponseDto } from '../../users/dto/response/response-user.dto'
+import { UserResponseEntity } from '../../users/entities/user.entity'
 
-export class TokenResponseDto {
+export class AuthResponseDto {
+  constructor(response: AuthResponseDto) {
+    this.token = response.token
+    this.User = response.User
+  }
+
   token: string
-  User: UserEntity
+  User: UserResponseDto
+
+  static handle({ token, user }: AuthResponse): AuthResponseDto {
+    return {
+      token: token,
+      User: { ...UserResponseDto.handle(user) }
+    }
+  }
+}
+
+export class AuthResponse {
+  token: string
+  user: UserResponseEntity
 }

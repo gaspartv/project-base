@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import 'dotenv/config'
 import { ExtractJwt, Strategy } from 'passport-jwt'
-import { IPayload } from '../../modules/auth/interfaces/payload.interface'
+import { IJwtPayload } from '../../modules/auth/interfaces/payload.interface'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-all') {
@@ -14,7 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-all') {
     })
   }
 
-  async validate(payload: IPayload): Promise<IPayload> {
+  async validate(payload: IJwtPayload): Promise<IJwtPayload> {
     const { sign } = payload
 
     return { sign }

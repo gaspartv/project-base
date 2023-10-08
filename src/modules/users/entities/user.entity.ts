@@ -12,7 +12,9 @@ export class UserEntity {
     this.firstName = user.firstName
     this.lastName = user.lastName
     this.email = user.email
+    this.login = user.login
     this.phone = user.phone
+    this.cpf = user.cpf
     this.passwordHash = user.passwordHash
     this.description = user.description || null
     this.imageUri = user.imageUri || null
@@ -29,7 +31,9 @@ export class UserEntity {
   readonly firstName: string
   readonly lastName: string
   readonly email: string
+  readonly login: string
   readonly phone: string
+  readonly cpf: string
   readonly passwordHash: string
   readonly description?: string | null
   readonly imageUri?: string | null
@@ -48,7 +52,9 @@ export class UserResponseEntity {
     this.firstName = user.firstName
     this.lastName = user.lastName
     this.email = user.email
+    this.login = user.login
     this.phone = user.phone
+    this.cpf = user.cpf
     this.passwordHash = user.passwordHash
     this.description = user.description
     this.imageUri = user.imageUri
@@ -66,7 +72,9 @@ export class UserResponseEntity {
   readonly firstName: string
   readonly lastName: string
   readonly email: string
+  readonly login: string
   readonly phone: string
+  readonly cpf: string
   readonly passwordHash: string
   readonly description: string | null
   readonly imageUri: string | null

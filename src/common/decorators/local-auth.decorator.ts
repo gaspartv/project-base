@@ -1,5 +1,5 @@
 import { UseGuards, applyDecorators } from '@nestjs/common'
-import { LocalGuard } from '../guards/local.guard'
+import { LocalGuard } from '../../modules/auth/guards/local.guard'
 
 export function LocalAuth() {
   return applyDecorators(UseGuards(LocalGuard))

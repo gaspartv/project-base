@@ -5,8 +5,6 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { FastifyReply } from 'fastify'
-import { IJwtPayload } from '../../modules/auth/interfaces/payload.interface'
-import { IRequest } from '../../modules/auth/interfaces/request.interface'
 import {
   SessionEntity,
   SessionResponseEntity
@@ -14,6 +12,8 @@ import {
 import { SessionsRepository } from '../../modules/sessions/repositories/sessions.repository'
 import { UserEntity } from '../../modules/users/entities/user.entity'
 import { UsersService } from '../../modules/users/users.service'
+import { IJwtPayload } from '../interfaces/jwt-payload.interface'
+import { IRequest } from '../interfaces/request.interface'
 import { GeneratorDate } from '../utils/generator-date'
 
 @Injectable()

@@ -13,6 +13,9 @@ export class UsersRedisRepository implements UsersRepository {
     private readonly redis: RedisService,
     private readonly prisma: UsersPrismaRepository
   ) {}
+  async findOneForAuth(login: string): Promise<UserResponseEntity> {
+    return await this.prisma.findOneForAuth(login)
+  }
 
   private prefixEntity: string = 'user:'
   private prefixEntities: string = 'users:'

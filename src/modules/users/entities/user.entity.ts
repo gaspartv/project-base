@@ -1,11 +1,31 @@
 import { ELanguage, EUserPolice } from '@prisma/client'
 import { randomUUID } from 'crypto'
+import { HashProvider } from '../../../providers/hashing/hash.provider'
 import { SessionEntity } from '../../sessions/entities/session.entity'
 
+class User {
+  disabledAt?: Date | null
+  deletedAt?: Date | null
+  updatedAt?: Date
+  firstName: string
+  lastName: string
+  email: string
+  login: string
+  phone: string
+  cpf: string
+  password?: string
+  passwordHash?: string
+  description?: string | null
+  imageUri?: string | null
+  darkMode?: boolean
+  language?: ELanguage
+  police?: EUserPolice
+}
+
 export class UserEntity {
-  constructor(user: UserEntity) {
-    this.id = user.id || randomUUID()
-    this.createdAt = user.createdAt || new Date()
+  constructor(user: User) {
+    this.id = randomUUID()
+    this.createdAt = new Date()
     this.updatedAt = user.updatedAt || new Date()
     this.disabledAt = user.disabledAt || null
     this.deletedAt = user.deletedAt || null
@@ -15,19 +35,21 @@ export class UserEntity {
     this.login = user.login
     this.phone = user.phone
     this.cpf = user.cpf
-    this.passwordHash = user.passwordHash
+    this.passwordHash = user.password
+      ? HashProvider.passwordHash(user.password)
+      : user.passwordHash
     this.description = user.description || null
     this.imageUri = user.imageUri || null
     this.darkMode = user.darkMode || false
-    this.language = user.language || 'PT_BR'
-    this.police = user.police || 'NORMAL'
+    this.language = user.language || ELanguage.PT_BR
+    this.police = user.police || EUserPolice.NORMAL
   }
 
-  readonly id?: string
-  readonly createdAt?: Date
-  readonly updatedAt?: Date
-  readonly disabledAt?: Date | null
-  readonly deletedAt?: Date | null
+  readonly id: string
+  readonly createdAt: Date
+  readonly updatedAt: Date
+  readonly disabledAt: Date | null
+  readonly deletedAt: Date | null
   readonly firstName: string
   readonly lastName: string
   readonly email: string
@@ -37,9 +59,9 @@ export class UserEntity {
   readonly passwordHash: string
   readonly description?: string | null
   readonly imageUri?: string | null
-  readonly darkMode?: boolean
-  readonly language?: ELanguage
-  readonly police?: EUserPolice
+  readonly darkMode: boolean
+  readonly language: ELanguage
+  readonly police: EUserPolice
 }
 
 export class UserResponseEntity {

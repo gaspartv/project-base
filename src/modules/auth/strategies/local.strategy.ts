@@ -1,16 +1,30 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception'
 import { PassportStrategy } from '@nestjs/passport'
+import { compare } from 'bcryptjs'
 import { Strategy } from 'passport-local'
-import { UserEntity } from '../../users/entities/user.entity'
-import { AuthService } from '../auth.service'
+import {
+  UserEntity,
+  UserResponseEntity
+} from '../../users/entities/user.entity'
+import { UsersRepository } from '../../users/repositories/users.repository'
 
 @Injectable()
-export class LocalStrategy extends PassportStrategy(Strategy, 'local-all') {
-  constructor(private authService: AuthService) {
+export class LocalStrategy extends PassportStrategy(Strategy, 'local-auth') {
+  constructor(private readonly usersRepository: UsersRepository) {
     super({ usernameField: 'login' })
   }
 
-  validate(login: string, password: string): Promise<UserEntity> {
-    return this.authService.validateUser(login, password)
+  async validate(login: string, password: string): Promise<UserEntity> {
+    const user: UserResponseEntity =
+      await this.usersRepository.findOneForAuth(login)
+
+    if (!user) throw new UnauthorizedException('login unauthorized')
+
+    const isPasswordValid: boolean = await compare(password, user.passwordHash)
+
+    if (!isPasswordValid) throw new UnauthorizedException('login unauthorized')
+
+    return user
   }
 }

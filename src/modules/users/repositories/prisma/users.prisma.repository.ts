@@ -119,4 +119,25 @@ export class UsersPrismaRepository implements UsersRepository {
       }
     })
   }
+
+  async findOneForAuth(login: string): Promise<UserResponseEntity> {
+    return await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { deletedAt: null, disabledAt: null, email: login },
+          { deletedAt: null, disabledAt: null, phone: login },
+          { deletedAt: null, disabledAt: null, cpf: login },
+          { deletedAt: null, disabledAt: null, login }
+        ]
+      },
+      include: {
+        Sessions: {
+          where: {
+            disconnectedAt: null
+          },
+          take: 1
+        }
+      }
+    })
+  }
 }

@@ -18,6 +18,6 @@ import { UsersUseCase } from './users.use-case'
     UsersPrismaRepository,
     { provide: UsersRepository, useClass: UsersRedisRepository }
   ],
-  exports: [UsersService]
+  exports: [UsersRepository, UsersService]
 })
 export class UsersModule {}

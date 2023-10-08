@@ -35,14 +35,22 @@ export class UsersService {
 
     const password: string = randomUUID().toString()
 
-    const passwordHash = HashProvider.passwordHash(password)
-
     const entity: UserEntity = new UserEntity({
       ...dto,
-      passwordHash
+      password
     })
 
     return await this.repository.create(entity)
+  }
+
+  async findOneForAuth(login: string): Promise<UserResponseEntity> {
+    const user = await this.repository.findOneForAuth(login)
+
+    if (!user) {
+      throw new NotFoundException('user not found')
+    }
+
+    return user
   }
 
   async findMany(options: UserPaginationDto): Promise<UserResponseEntity[]> {

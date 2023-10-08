@@ -9,6 +9,9 @@ import { UsersRepository } from '../users.repository'
 
 @Injectable()
 export class UsersFakeRepository implements UsersRepository {
+  findOneForAuth(login: string): Promise<UserResponseEntity> {
+    throw new Error('Method not implemented.')
+  }
   users: UserResponseEntity[] = []
 
   async create(entity: UserEntity): Promise<UserResponseEntity> {

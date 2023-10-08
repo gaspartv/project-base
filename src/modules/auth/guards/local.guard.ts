@@ -1,8 +1,10 @@
-import { ConflictException, ExecutionContext, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
+import { ConflictException } from '@nestjs/common/exceptions/conflict.exception'
+import { ExecutionContext } from '@nestjs/common/interfaces/features/execution-context.interface'
 import { AuthGuard } from '@nestjs/passport'
 
 @Injectable()
-export class LocalGuard extends AuthGuard('local-all') {
+export class LocalGuard extends AuthGuard('local-auth') {
   canActivate(context: ExecutionContext) {
     return super.canActivate(context)
   }

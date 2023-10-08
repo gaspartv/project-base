@@ -1,6 +1,7 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { JwtService } from '@nestjs/jwt'
-import { compare } from 'bcryptjs'
+import { MessageDto } from '../../common/dto/message.dto'
+import { IJwtPayload } from '../../common/interfaces/jwt-payload.interface'
 import { GeneratorDate } from '../../common/utils/generator-date'
 import { UserResponseEntity } from '../../modules/users/entities/user.entity'
 import {
@@ -8,22 +9,16 @@ import {
   SessionResponseEntity
 } from '../sessions/entities/session.entity'
 import { SessionsRepository } from '../sessions/repositories/sessions.repository'
-import { UsersService } from '../users/users.service'
-import { AuthResponseDto } from './dto/auth-response.dto'
-import { MessageDto } from './dto/message.dto'
-import { IJwtPayload } from './interfaces/payload.interface'
-import { AuthRepository } from './repositories/auth.repository'
+import { ResponseLoginDto } from './dto/response/response-login.dto'
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly sessionsRepository: SessionsRepository,
-    private readonly repository: AuthRepository,
-    private readonly usersService: UsersService
+    private readonly sessionsRepository: SessionsRepository
   ) {}
 
-  async login(user: UserResponseEntity): Promise<AuthResponseDto> {
+  async login(user: UserResponseEntity): Promise<ResponseLoginDto> {
     const expiresAt: Date = GeneratorDate.expiresAt()
 
     const entity: SessionEntity = new SessionEntity({
@@ -46,7 +41,7 @@ export class AuthService {
 
     const token: string = this.jwtService.sign(payload)
 
-    return AuthResponseDto.handle({
+    return ResponseLoginDto.handle({
       token,
       user
     })
@@ -56,36 +51,5 @@ export class AuthService {
     await this.sessionsRepository.disconnectedMany(userId)
 
     return { message: 'logout successfully' }
-  }
-
-  async validateUser(
-    login: string,
-    password: string
-  ): Promise<UserResponseEntity> {
-    const user: UserResponseEntity = await this.repository.findOneUser(login)
-
-    if (!user) {
-      throw new UnauthorizedException('login unauthorized')
-    }
-
-    return await this.validate(user, password)
-  }
-
-  private async validate<T extends { passwordHash: string }>(
-    user: T,
-    password: string
-  ): Promise<T> {
-    if (user) {
-      const isPasswordValid = await compare(password, user.passwordHash)
-
-      if (isPasswordValid) {
-        return {
-          ...user,
-          passwordHash: undefined
-        }
-      }
-    }
-
-    throw new UnauthorizedException('login unauthorized')
   }
 }

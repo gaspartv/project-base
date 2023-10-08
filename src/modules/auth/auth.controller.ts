@@ -1,14 +1,24 @@
-import { Body, Controller, Delete, HttpCode, Post, Req } from '@nestjs/common'
+import { Controller } from '@nestjs/common/decorators/core/controller.decorator'
+import { HttpCode } from '@nestjs/common/decorators/http/http-code.decorator'
+import {
+  Delete,
+  Post
+} from '@nestjs/common/decorators/http/request-mapping.decorator'
+import {
+  Body,
+  Req
+} from '@nestjs/common/decorators/http/route-params.decorator'
 import { ApiTags } from '@nestjs/swagger'
 import { IsPublic } from '../../common/decorators/custom/is-public.decorator'
 import { LocalAuth } from '../../common/decorators/local-auth.decorator'
 import { Sign } from '../../common/decorators/param/sign.decorator'
+import { MessageDto } from '../../common/dto/message.dto'
+import { ISign } from '../../common/interfaces/jwt-payload.interface'
+import { IRequest } from '../../common/interfaces/request.interface'
+import { UserResponseEntity } from '../users/entities/user.entity'
 import { AuthService } from './auth.service'
-import { LoginDto } from './dto/auth-login.dto'
-import { AuthResponseDto } from './dto/auth-response.dto'
-import { MessageDto } from './dto/message.dto'
-import { ISign } from './interfaces/payload.interface'
-import { IRequest } from './interfaces/request.interface'
+import { RequestLoginDto } from './dto/request/request-login.dto'
+import { ResponseLoginDto } from './dto/response/response-login.dto'
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -22,9 +32,9 @@ export class AuthController {
   async login(
     @Req() req: IRequest,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Body() _body: LoginDto
-  ): Promise<AuthResponseDto> {
-    const user = req.user
+    @Body() _body: RequestLoginDto
+  ): Promise<ResponseLoginDto> {
+    const user: UserResponseEntity = req.user
 
     return await this.service.login(user)
   }

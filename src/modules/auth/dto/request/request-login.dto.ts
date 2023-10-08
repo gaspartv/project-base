@@ -1,6 +1,9 @@
 import { IsString } from 'class-validator'
 
-export class CheckPasswordDto {
+export class RequestLoginDto {
+  @IsString()
+  login: string
+
   @IsString()
   password: string
 }

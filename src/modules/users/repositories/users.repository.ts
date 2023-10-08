@@ -24,4 +24,6 @@ export abstract class UsersRepository {
     id: string,
     dto: UserVerifyUniqueFieldDto
   ): Promise<UserVerifyUniqueFieldDto>
+
+  abstract findOneForAuth(login: string): Promise<UserResponseEntity>
 }

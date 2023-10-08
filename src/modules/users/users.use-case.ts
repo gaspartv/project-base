@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
+import { MessageDto } from '../../common/dto/message.dto'
 import { PaginationUtil } from '../../common/pagination/pagination.util'
-import { MessageDto } from '../auth/dto/message.dto'
 import { UserCreateDto } from './dto/request/create-user.dto'
 import { UserPaginationDto } from './dto/request/pagination-user.dto'
 import { UserUpdateEmailDto } from './dto/request/update-user-email.dto'

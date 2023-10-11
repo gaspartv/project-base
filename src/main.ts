@@ -7,6 +7,7 @@ import { NestFactory } from '@nestjs/core/nest-factory'
 import { FastifyAdapter } from '@nestjs/platform-fastify/adapters/fastify-adapter'
 import { NestFastifyApplication } from '@nestjs/platform-fastify/interfaces/nest-fastify-application.interface'
 import fileUpload from 'fastify-file-upload'
+import { join } from 'path'
 import { AppModule } from './app.module'
 import { TransformationInterceptor } from './config/global-interceptor'
 import { PrismaClientExceptionFilter } from './config/prisma/prisma.exception'
@@ -27,7 +28,7 @@ async function bootstrap() {
   app.register(fileUpload, {
     limits: { fileSize: 1024 * 1024 * 5 },
     useTempFiles: true,
-    tempFileDir: 'tmp',
+    tempFileDir: 'tmp/trash',
     createParentPath: true,
     uriDecodeFileNames: true,
     safeFileNames: '/.(jpg|jpeg|png)$/i',
@@ -55,6 +56,8 @@ async function bootstrap() {
 
   /// DOCUMENTAÇÃO ///
   documentBuilder(app)
+
+  app.useStaticAssets({ root: join(__dirname, '..') })
 
   await app.listen(Number(process.env.PORT_BACKEND), '0.0.0.0', () =>
     Logger.log(`> Server start in port ${Number(process.env.PORT_BACKEND)}`)

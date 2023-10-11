@@ -41,7 +41,7 @@ export class UserResponseDto {
       email: entity.email,
       phone: entity.phone,
       description: entity.description,
-      imageUrl: process.env.URL_BACKEND + entity.imageUri,
+      imageUrl: process.env.URL_BACKEND + 'tmp/avatar/' + entity.imageUri,
       police: entity.police,
       settings: {
         language: entity.language,

@@ -6,9 +6,9 @@ import { ConfigModule } from '@nestjs/config'
 import { APP_GUARD, APP_PIPE } from '@nestjs/core'
 import { JwtModule, JwtService } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
-import { ServeStaticModule } from '@nestjs/serve-static'
+import { ScheduleModule } from '@nestjs/schedule'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
-import { join } from 'path'
+import { AppService } from './app.service'
 import { CheckPasswordGuard } from './common/guards/check-password.guard'
 import { JwtGuard } from './common/guards/jwt.guard'
 import { RefreshTokenMiddleware } from './common/middlewares/refresh-token.middleware'
@@ -22,6 +22,7 @@ import { UsersModule } from './modules/users/users.module'
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     PassportModule.register({ defaultStrategy: 'jwt-all' }),
     JwtModule.register({
       global: true,
@@ -37,10 +38,6 @@ import { UsersModule } from './modules/users/users.module'
       isGlobal: true,
       validationOptions: { allowUnknown: false }
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'tmp')
-    }),
-
     PrismaModule,
     RedisModule,
     AuthModule,
@@ -49,6 +46,7 @@ import { UsersModule } from './modules/users/users.module'
     PassTokensModule
   ],
   providers: [
+    AppService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtGuard },
     { provide: APP_GUARD, useClass: CheckPasswordGuard },

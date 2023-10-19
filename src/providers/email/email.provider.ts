@@ -1,27 +1,98 @@
 import { Logger } from '@nestjs/common/services/logger.service'
 import 'dotenv/config'
+import * as fs from 'fs'
+import handlebars from 'handlebars'
 import { createTransport } from 'nodemailer'
-import { EmailCreateUserDto } from './dto/request/email-create-user.dto'
-import { EmailSendDto } from './dto/request/email-send.dto'
-import { EmailGenerate } from './email.template'
+import { resolve } from 'path'
+import { mainDirname } from '../../root-dirname'
+
+class CreateUserDto {
+  name: string
+  email: string
+  passTokenId: string
+}
+
+class RecoveryPassDto {
+  name: string
+  email: string
+  passTokenId: string
+}
+
+class SendEmailDto {
+  email: string
+  subject: string
+  html: string
+}
 
 export class EmailProvider {
-  static recoveryPass(dto: EmailCreateUserDto): void {
-    const { email, passTokenId } = dto
+  static async createUser(dto: CreateUserDto): Promise<void> {
+    const { email, passTokenId, name } = dto
+
+    const subject = `Recuperação de senha.`
+
+    const createUserTemplate = resolve(
+      mainDirname,
+      'src',
+      'providers',
+      'email',
+      'templates',
+      'create-user.hbs'
+    )
+
+    const templateFileContent = await fs.promises.readFile(createUserTemplate, {
+      encoding: 'utf-8'
+    })
+
+    const parseTemplate = handlebars.compile(templateFileContent)
 
     const urlFront: string = process.env.URL_FRONTEND
 
-    const { html, subject } = EmailGenerate.passUserRecovery({
-      urlFront,
-      passToken: passTokenId
-    })
+    const link = 'http://' + urlFront + '/change-password/' + passTokenId
+
+    const variables = { name, link }
+
+    const html = parseTemplate(variables)
 
     this.sendEmail({ email, subject, html })
 
     return
   }
 
-  static sendEmail(dto: EmailSendDto): void {
+  static async recoveryPass(dto: RecoveryPassDto): Promise<void> {
+    const { email, passTokenId, name } = dto
+
+    const subject = `Recuperação de senha.`
+
+    const recoveryPassTemplate = resolve(
+      mainDirname,
+      'src',
+      'providers',
+      'email',
+      'templates',
+      'recovery-password.hbs'
+    )
+
+    const templateFileContent = await fs.promises.readFile(
+      recoveryPassTemplate,
+      { encoding: 'utf-8' }
+    )
+
+    const parseTemplate = handlebars.compile(templateFileContent)
+
+    const urlFront: string = process.env.URL_FRONTEND
+
+    const link = 'http://' + urlFront + '/change-password/' + passTokenId
+
+    const variables = { name, link }
+
+    const html = parseTemplate(variables)
+
+    this.sendEmail({ email, subject, html })
+
+    return
+  }
+
+  private static sendEmail(dto: SendEmailDto): void {
     const { email, html, subject } = dto
 
     const user = process.env.SMTP_USER

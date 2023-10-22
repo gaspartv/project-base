@@ -19,9 +19,11 @@ import { AuthModule } from './modules/auth/auth.module'
 import { PassTokensModule } from './modules/pass-tokens/pass-tokens.module'
 import { SessionsModule } from './modules/sessions/sessions.module'
 import { UsersModule } from './modules/users/users.module'
+import { WhatsappModule } from './modules/webhooks/whatsapp/whatsapp.module'
 
 @Module({
   imports: [
+    WhatsappModule,
     ScheduleModule.forRoot(),
     PassportModule.register({ defaultStrategy: 'jwt-all' }),
     JwtModule.register({

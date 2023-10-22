@@ -51,8 +51,8 @@ async function bootstrap() {
   const httpAdapter = app.getHttpAdapter()
 
   /// GLOBAL INTERCEPTORS ///
-  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter))
-  app.useGlobalInterceptors(new TransformationInterceptor<NestInterceptor>())
+  // app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter))
+  // app.useGlobalInterceptors(new TransformationInterceptor<NestInterceptor>())
 
   /// DOCUMENTAÇÃO ///
   documentBuilder(app)

@@ -22,6 +22,50 @@ enum EUserPolice {
   @@map("user_polices")
 }
 
+enum ECompanyPolice {
+  BUSINESS
+  SUPER
+
+  @@map("company_police")
+}
+
+enum EMessageStatus {
+  PROCESS
+  SENT
+  DELIVERED
+  READ
+
+  @@map("message_status")
+}
+
+enum EMessageType {
+  AUDIO
+  CONTACT
+  DOCUMENT
+  IMAGE
+  LOCATION
+  STICKER
+  TEXT
+  VIDEO
+
+  @@map("message_type")
+}
+
+enum EChatType {
+  WHATSAPP
+  INSTAGRAM
+  FACEBOOK
+
+  @@map("chat_type")
+}
+
+enum EDepartmentPolice {
+  ATTENDANT
+  MANAGER
+
+  @@map("department_polices")
+}
+
 model User {
   id           String      @id @default(uuid()) @db.Uuid
   createdAt    DateTime    @default(now())
@@ -41,8 +85,11 @@ model User {
   language     ELanguage   @default(PT_BR)
   police       EUserPolice @default(NORMAL)
 
-  Sessions  Session[]
-  PassToken PassToken[]
+  Sessions      Session[]
+  PassToken     PassToken[]
+  Working       Working[]
+  Chat          Chat[]
+  ChatAttendant ChatAttendant[]
 
   @@map("users")
 }
@@ -73,4 +120,265 @@ model PassToken {
   userId String @db.Uuid
 
   @@map("pass_tokens")
+}
+
+model Company {
+  id         String    @id @default(uuid()) @db.Uuid
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  disabledAt DateTime?
+
+  corporateName String  @unique
+  tradingName   String
+  cnpj          String  @unique
+  phone         String?
+  botName       String? @default("MIT_BOT")
+  closedChatIn  Int?    @default(30)
+
+  Police ECompanyPolice @default(BUSINESS)
+
+  MetaApp   MetaApp? @relation(fields: [metaAppId], references: [id])
+  metaAppId String?  @unique @db.Uuid
+
+  Whatsapp               MetaWhatsapp[]
+  Instagram              MetaInstagram[]
+  Facebook               MetaFacebook[]
+  Conversation           Conversation[]
+  Department             Department[]
+  Chat                   Chat[]
+  Client                 Client[]
+  SuggestionConversation SuggestionConversation[]
+}
+
+model Working {
+  id         String    @id @default(uuid()) @db.Uuid
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  disabledAt DateTime?
+
+  Police EDepartmentPolice @default(ATTENDANT)
+
+  User   User   @relation(fields: [userId], references: [id])
+  userId String @db.Uuid
+
+  Department   Department @relation(fields: [departmentId], references: [id])
+  departmentId String     @db.Uuid
+
+  @@unique([userId, departmentId])
+  @@map("workings")
+}
+
+model Department {
+  id         String    @id @default(uuid()) @map("id") @db.Uuid
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  disabledAt DateTime? @map("disabled_at")
+
+  index       Int?    @map("index")
+  name        String  @map("name")
+  description String?
+
+  // One Relations
+  Company   Company @relation(fields: [companyId], references: [id])
+  companyId String  @map("company_id") @db.Uuid
+
+  // Many Relations
+  Workings      Working[]
+  Chat          Chat[]
+  ChatAttendant ChatAttendant[]
+
+  @@unique([companyId, name])
+  @@map("departments")
+}
+
+model MetaApp {
+  id String @id @default(uuid()) @db.Uuid
+
+  metaAppToken String @unique
+  metaAppId    String @unique
+
+  Companies Company[]
+  Whatsapp  MetaWhatsapp[]
+  Instagram MetaInstagram[]
+  Facebook  MetaFacebook[]
+
+  @@map("meta_app")
+}
+
+model MetaWhatsapp {
+  id String @id @default(uuid()) @db.Uuid
+
+  whatsappNumber String @unique
+  whatsappId     String @unique
+
+  MetaApp   MetaApp @relation(fields: [metaAppId], references: [id])
+  metaAppId String  @db.Uuid
+
+  Company   Company @relation(fields: [companyId], references: [id])
+  companyId String  @db.Uuid
+
+  @@map("meta_whatsapp")
+}
+
+model MetaInstagram {
+  id String @id @default(uuid()) @db.Uuid
+
+  instagramToken String @unique
+  instagramId    String @unique
+
+  MetaApp   MetaApp @relation(fields: [metaAppId], references: [id])
+  metaAppId String  @db.Uuid
+
+  Company   Company @relation(fields: [companyId], references: [id])
+  companyId String  @db.Uuid
+
+  @@map("meta_instagram")
+}
+
+model Message {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+
+  status          EMessageStatus @default(PROCESS)
+  type            EMessageType   @default(TEXT)
+  integrationId   String?        @unique
+  body            String
+  sendByAttendant Boolean
+
+  Chat   Chat   @relation(fields: [chatId], references: [id])
+  chatId String @db.Uuid
+
+  ChatAttendant   ChatAttendant? @relation(fields: [chatAttendantId], references: [id])
+  chatAttendantId String?        @db.Uuid
+
+  @@map("messages")
+}
+
+model Chat {
+  id            String    @id @default(uuid()) @db.Uuid
+  requestNumber String
+  createdAt     DateTime  @default(now())
+  closedAt      DateTime?
+
+  type        EChatType
+  contactId   String?
+  contactName String?
+  businessId  String
+
+  // One Relations  
+  Attendant   User?   @relation(fields: [attendantId], references: [id])
+  attendantId String? @db.Uuid
+
+  Department   Department? @relation(fields: [departmentId], references: [id])
+  departmentId String?     @db.Uuid
+
+  Company   Company @relation(fields: [companyId], references: [id])
+  companyId String  @db.Uuid
+
+  Client   Client @relation(fields: [clientId], references: [id])
+  clientId String @db.Uuid
+
+  // Many Relations
+  Messages Message[]
+  History  ChatAttendant[]
+
+  @@map("chats")
+}
+
+model ChatAttendant {
+  id        String    @id @default(uuid()) @db.Uuid
+  createdAt DateTime  @default(now())
+  closedAt  DateTime?
+
+  // One Relations
+  Attendant   User?   @relation(fields: [attendantId], references: [id])
+  attendantId String? @db.Uuid
+
+  Department   Department @relation(fields: [departmentId], references: [id])
+  departmentId String     @db.Uuid
+
+  Chat   Chat   @relation(fields: [chatId], references: [id])
+  chatId String @db.Uuid
+
+  // Many Relations
+  Messages Message[]
+
+  @@map("chat_attendant")
+}
+
+model Client {
+  id        String  @id @default(uuid()) @db.Uuid
+  code      String? @unique
+  cpf       String?
+  email     String?
+  firstName String?
+  lastName  String?
+
+  // WhatsApp
+  whatsappId   String?
+  whatsappName String?
+
+  // Instagram
+  instagramId   String?
+  instagramName String?
+
+  // Facebook
+  facebookId   String?
+  facebookName String?
+
+  // One Relations
+  Company   Company @relation(fields: [companyId], references: [id])
+  companyId String  @db.Uuid
+
+  // Many Relations
+  Chat Chat[]
+
+  @@unique([id, cpf, email, whatsappId, instagramId, facebookId, companyId])
+  @@map("clients")
+}
+
+model Conversation {
+  id      String  @id @default(uuid()) @db.Uuid
+  title   String? @default("Clique aqui")
+  header  String?
+  body    String?
+  buttons String?
+  footer  String?
+
+  isMain Boolean
+
+  Company   Company @relation(fields: [companyId], references: [id])
+  companyId String  @db.Uuid
+
+  parent   Conversation? @relation("ChildToParent", fields: [parentId], references: [id])
+  parentId String?       @db.Uuid
+
+  answers Conversation[] @relation("ChildToParent")
+
+  @@map("conversations")
+}
+
+model SuggestionConversation {
+  id   String @id @default(uuid()) @db.Uuid
+  body String
+
+  Company   Company @relation(fields: [companyId], references: [id])
+  companyId String  @db.Uuid
+
+  @@map("suggestion_conversations")
+}
+
+model MetaFacebook {
+  id String @id @default(uuid()) @db.Uuid
+
+  facebookToken String @unique
+  facebookId    String @unique
+
+  MetaApp   MetaApp @relation(fields: [metaAppId], references: [id])
+  metaAppId String  @db.Uuid
+
+  Company   Company @relation(fields: [companyId], references: [id])
+  companyId String  @db.Uuid
+
+  @@map("meta_facebook")
 }

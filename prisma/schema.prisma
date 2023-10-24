@@ -250,8 +250,18 @@ model Message {
 
   ChatAttendant   ChatAttendant? @relation(fields: [chatAttendantId], references: [id])
   chatAttendantId String?        @db.Uuid
+  Reaction        Reaction[]
 
   @@map("messages")
+}
+
+model Reaction {
+  id String @id @default(uuid()) @db.Uuid
+
+  Message   Message @relation(fields: [messageId], references: [id])
+  messageId String  @db.Uuid
+
+  emoji String
 }
 
 model Chat {

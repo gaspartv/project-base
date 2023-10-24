@@ -45,6 +45,7 @@ export class WhatsappController {
   @HttpCode(HttpStatus.OK)
   async post(@Body() dto: RequestReceiveDto) {
     if (dto.entry[0].changes[0].value.statuses) {
+      console.log(dto.entry[0].changes[0].value.statuses)
       return
     }
 

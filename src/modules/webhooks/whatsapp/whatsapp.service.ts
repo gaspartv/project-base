@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
-import { Prisma } from '@prisma/client'
+import { Message, Prisma } from '@prisma/client'
+import { exec } from 'child_process'
 import { randomUUID } from 'crypto'
 import { PrismaService } from '../../../config/prisma/prisma.service'
 import {
@@ -42,6 +43,44 @@ export class WhatsappService {
       handleChat.id,
       handleChat.attendantId
     )
+
+    await fetch(
+      `${process.env.WHATSAPP_URL}/${process.env.META_WHATSAPP_ID}/messages`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          to: dto.contact.id,
+          type: 'text',
+          text: { body: 'oi' }
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.META_APP_TOKEN}`
+        }
+      }
+    )
+
+    /// EMITIR A MESSAGE DO handleMessage PARA O FRONT ///
+  }
+
+  private async handleFileDownload(id: string, type: string): Promise<string> {
+    const urlAudio = process.env.WHATSAPP_URL + id
+
+    const resAudio = await fetch(urlAudio, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${process.env.META_APP_TOKEN}` }
+    }).then((el) => el.json())
+
+    const pathDirImage = `/tmp/whatsapp/${type}/${resAudio.id}.${
+      resAudio.mime_type.split('/')[1]
+    }`
+
+    const curlAudioCommand = `curl -X GET '${resAudio.url}' -H 'Authorization: Bearer ${process.env.META_APP_TOKEN}' > .${pathDirImage}`
+
+    exec(curlAudioCommand)
+
+    return pathDirImage
   }
 
   private async handleMessage(
@@ -49,8 +88,6 @@ export class WhatsappService {
     chatId: string,
     chatAttendantId: string
   ) {
-    console.log(dto)
-
     let data: Prisma.MessageUncheckedCreateInput
 
     switch (dto.type) {
@@ -60,100 +97,171 @@ export class WhatsappService {
           chatId,
           sendByAttendant: false,
           type: 'TEXT',
-          status: 'PROCESS',
+          status: 'READ',
+          integrationId: dto.id,
+          chatAttendantId
+        }
+
+        break
+
+      case MessageReceiveType.AUDIO:
+        const pathDirAudio = await this.handleFileDownload(
+          dto.audio.id,
+          'audio'
+        )
+
+        data = {
+          body: pathDirAudio,
+          chatId,
+          sendByAttendant: false,
+          type: 'AUDIO',
+          status: 'READ',
           integrationId: dto.id,
           chatAttendantId
         }
         break
-      case MessageReceiveType.AUDIO:
-        break
-      case MessageReceiveType.CONTACTS:
-        break
+
       case MessageReceiveType.DOCUMENT:
+        const pathDirDocument = await this.handleFileDownload(
+          dto.document.id,
+          'document'
+        )
+
+        data = {
+          body: pathDirDocument,
+          chatId,
+          sendByAttendant: false,
+          type: 'DOCUMENT',
+          status: 'READ',
+          integrationId: dto.id,
+          chatAttendantId
+        }
+
         break
+
       case MessageReceiveType.IMAGE:
-        const response = await fetch(
-          `https://graph.facebook.com/v18.0/${dto.image.id}`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${process.env.META_APP_TOKEN}`,
-              'User-Agent':
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, como Gecko) Chrome/68.0.3440.106 Safari/537.36'
-            }
-          }
-        ).then((el) => el.json())
+        const pathDirImage = await this.handleFileDownload(
+          dto.image.id,
+          'image'
+        )
 
-        const image = await fetch(
-          `https://graph.facebook.com/v18.0/${response.url}`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${process.env.META_APP_TOKEN}`,
-              'User-Agent':
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, como Gecko) Chrome/68.0.3440.106 Safari/537.36'
-            }
-          }
-        ).then((el) => el.json())
-
-        console.log(image)
-
-        // try {
-        //   const res = await axios.get(response.url, { responseType: 'stream' })
-
-        //   // Verifique se a solicitação foi bem-sucedida (código de status 200).
-        //   if (res.status === 200) {
-        //     // Defina o diretório e o nome do arquivo onde você deseja salvar a imagem.
-        //     const saveDir = 'tmp'
-
-        //     const imageFilename = 'nome_da_imagem.jpeg'
-
-        //     // Combine o diretório com o nome do arquivo.
-        //     const imageFullPath = join(saveDir, imageFilename)
-
-        //     // Crie um fluxo de escrita para salvar a imagem.
-        //     const writer = fs.createWriteStream(imageFullPath)
-
-        //     // Pipelina os dados da resposta para o fluxo de escrita.
-        //     res.data.pipe(writer)
-
-        //     // Aguarde o término da gravação e manipule quaisquer erros.
-        //     await new Promise((resolve, reject) => {
-        //       writer.on('finish', resolve)
-        //       writer.on('error', reject)
-        //     })
-
-        //     // Neste ponto, a imagem foi salva no diretório especificado.
-        //   } else {
-        //     console.error(
-        //       'Falha ao obter a imagem. Código de status:',
-        //       response.status
-        //     )
-        //   }
-        // } catch (error) {
-        //   console.error('Erro ao baixar e salvar a imagem:', error)
-        // }
+        data = {
+          body: pathDirImage,
+          chatId,
+          sendByAttendant: false,
+          type: 'IMAGE',
+          status: 'READ',
+          integrationId: dto.id,
+          chatAttendantId
+        }
 
         break
-      case MessageReceiveType.INTERACTIVE:
-        break
-      case MessageReceiveType.LOCATION:
-        break
-      case MessageReceiveType.REACTION:
-        break
-      case MessageReceiveType.STICKER:
-        break
-      case MessageReceiveType.UNSUPPORTED:
-        break
+
       case MessageReceiveType.VIDEO:
+        const pathDirVideo = await this.handleFileDownload(
+          dto.video.id,
+          'video'
+        )
+
+        data = {
+          body: pathDirVideo,
+          chatId,
+          sendByAttendant: false,
+          type: 'AUDIO',
+          status: 'READ',
+          integrationId: dto.id,
+          chatAttendantId
+        }
+
         break
+
+      case MessageReceiveType.STICKER:
+        const pathDirSticker = await this.handleFileDownload(
+          dto.sticker.id,
+          'sticker'
+        )
+
+        data = {
+          body: pathDirSticker,
+          chatId,
+          sendByAttendant: false,
+          type: 'STICKER',
+          status: 'READ',
+          integrationId: dto.id,
+          chatAttendantId
+        }
+
+        break
+
+      case MessageReceiveType.CONTACTS:
+        data = {
+          body: JSON.stringify(dto.contacts[0]),
+          chatId,
+          sendByAttendant: false,
+          type: 'CONTACT',
+          status: 'READ',
+          integrationId: dto.id,
+          chatAttendantId
+        }
+
+        break
+
+      case MessageReceiveType.LOCATION:
+        data = {
+          body: JSON.stringify(dto.location),
+          chatId,
+          sendByAttendant: false,
+          type: 'LOCATION',
+          status: 'READ',
+          integrationId: dto.id,
+          chatAttendantId
+        }
+
+        break
+
+      case MessageReceiveType.REACTION:
+        await this.prisma.reaction.create({
+          data: {
+            emoji: dto.reaction.emoji,
+            Message: {
+              connect: { integrationId: dto.reaction.message_id }
+            }
+          }
+        })
+
+        break
+
+      case MessageReceiveType.UNSUPPORTED:
+      case MessageReceiveType.INTERACTIVE:
       default:
-        break
+        return
     }
 
-    // const message = await this.prisma.message.create({
-    //   data
-    // })
+    let message: Message
+
+    if (dto.type !== MessageReceiveType.REACTION) {
+      message = await this.prisma.message.create({
+        data
+      })
+    }
+
+    await fetch(
+      `${process.env.WHATSAPP_URL}/${process.env.META_WHATSAPP_ID}/messages`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          status: 'read',
+          message_id: dto.id
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.META_APP_TOKEN}`
+        }
+      }
+    )
+
+    return message
   }
 
   private async handleChat(

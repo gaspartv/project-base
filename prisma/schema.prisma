@@ -47,6 +47,7 @@ enum EMessageType {
   STICKER
   TEXT
   VIDEO
+  INTERACTIVE
 
   @@map("message_type")
 }

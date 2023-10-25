@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { Message, Prisma } from '@prisma/client'
 import { exec } from 'child_process'
-import { randomUUID } from 'crypto'
+import { generateRequestNumber } from '../../../common/utils/generator-random-number.util'
 import { PrismaService } from '../../../config/prisma/prisma.service'
 import {
   MessageReceiveDto,
@@ -25,7 +25,11 @@ export class WhatsappService {
       return
     }
 
-    const handleClient = await this.handleClient(dto.contact.id)
+    const handleClient = await this.handleClient(
+      dto.contact.id,
+      dto.contact.name,
+      handleCompany.id
+    )
 
     if (!handleClient) {
       return
@@ -33,6 +37,7 @@ export class WhatsappService {
 
     const handleChat = await this.handleChat(
       dto.contact.id,
+      dto.contact.name,
       handleClient.id,
       handleCompany.id,
       dto.business.id
@@ -43,25 +48,96 @@ export class WhatsappService {
       handleChat.id,
       handleChat.attendantId
     )
+    /// EMITIR A MESSAGE DO handleMessage PARA O FRONT ///
 
-    await fetch(
-      `${process.env.WHATSAPP_URL}/${process.env.META_WHATSAPP_ID}/messages`,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          messaging_product: 'whatsapp',
-          to: dto.contact.id,
-          type: 'text',
-          text: { body: 'oi' }
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.META_APP_TOKEN}`
+    if (handleChat.departmentId === null) {
+      console.log(handleMessage)
+      const messageSplit = [
+        dto.message?.interactive?.list_reply?.id || undefined,
+        handleMessage.body
+      ]
+
+      const handleChatBot = await this.handleChatBot(
+        handleCompany.Conversation,
+        handleCompany.Department,
+        messageSplit,
+        handleChat.id,
+        dto.contact.id,
+        handleCompany.Whatsapp[0].whatsappId
+      )
+    }
+
+    return
+
+    // await fetch(
+    //   `${process.env.WHATSAPP_URL}/${process.env.META_WHATSAPP_ID}/messages`,
+    //   {
+    //     method: 'POST',
+    //     body: JSON.stringify({
+    //       messaging_product: 'whatsapp',
+    //       to: dto.contact.id,
+    //       type: 'text',
+    //       text: { body: 'oi' }
+    //     }),
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${process.env.META_APP_TOKEN}`
+    //     }
+    //   }
+    // )
+  }
+
+  private async handleChatBot(
+    conversations: any,
+    departments: any,
+    messageSplit: string[],
+    chatId: string,
+    contactId: string,
+    businessId: string
+  ) {
+    const speakAttendant = conversations.find((el) => {
+      if (el.id === messageSplit[0]) return true
+      if (messageSplit[1]) {
+        if (el.header.toLowerCase() === messageSplit[1].toLowerCase()) {
+          return true
+        }
+      } else {
+        if (el.header.toLowerCase() === messageSplit[0].toLowerCase()) {
+          return true
         }
       }
-    )
+    })
 
-    /// EMITIR A MESSAGE DO handleMessage PARA O FRONT ///
+    if (speakAttendant) {
+      if (speakAttendant.header.toLowerCase() === 'falar com atendente') {
+        if (departments.length === 1) {
+          await this.prisma.chat.update({
+            where: { id: chatId },
+            data: { departmentId: departments[0].id }
+          })
+
+          // AVISAR O FRONT QUE O DEPARTAMENTO FOI ATUALIZADO
+          // this.webSocketService.getServer().emit(departments[0].id, true)
+
+          const textToSend =
+            'Você esta na fila de atendimento em breve um de nossos atendentes ira lhe responder.'
+
+          await this.send(
+            businessId,
+            contactId,
+            departments,
+            'text',
+            textToSend
+          )
+
+          return 'finish'
+        }
+      }
+    }
+
+    await this.send(businessId, contactId, departments, null, null)
+
+    return 'finish'
   }
 
   private async handleFileDownload(id: string, type: string): Promise<string> {
@@ -86,9 +162,11 @@ export class WhatsappService {
   private async handleMessage(
     dto: MessageReceiveDto,
     chatId: string,
-    chatAttendantId: string
+    chatAttendantId?: string
   ) {
     let data: Prisma.MessageUncheckedCreateInput
+
+    console.log(dto.type)
 
     switch (dto.type) {
       case MessageReceiveType.TEXT:
@@ -233,6 +311,17 @@ export class WhatsappService {
 
       case MessageReceiveType.UNSUPPORTED:
       case MessageReceiveType.INTERACTIVE:
+        data = {
+          body: JSON.stringify(dto.interactive.list_reply.title),
+          chatId,
+          sendByAttendant: false,
+          type: 'INTERACTIVE',
+          status: 'READ',
+          integrationId: dto.id,
+          chatAttendantId
+        }
+        console.log(dto.interactive.list_reply.title)
+        break
       default:
         return
     }
@@ -266,41 +355,70 @@ export class WhatsappService {
 
   private async handleChat(
     contactId: string,
+    contactName: string,
     clientId: string,
     companyId: string,
     businessId: string
   ) {
     const chat = await this.prisma.chat.findFirst({
-      where: { contactId }
+      where: { type: 'WHATSAPP', closedAt: null, companyId, clientId }
     })
 
-    if (chat) {
-      return chat
-    }
+    if (chat) return chat
+
+    const requestNumber = generateRequestNumber()
 
     return await this.prisma.chat.create({
       data: {
-        requestNumber: randomUUID().toString(),
+        requestNumber,
         type: 'WHATSAPP',
         businessId,
         clientId,
-        companyId
+        companyId,
+        contactId,
+        contactName
       }
     })
   }
 
-  private async handleClient(whatsappId: string) {
-    return await this.prisma.client.findFirst({
+  private async handleClient(
+    whatsappId: string,
+    whatsappName: string,
+    companyId: string
+  ) {
+    const client = await this.prisma.client.findFirst({
       where: { whatsappId }
     })
+
+    if (!client) {
+      const code = generateRequestNumber()
+
+      return await this.prisma.client.create({
+        data: {
+          whatsappId,
+          whatsappName,
+          companyId,
+          code,
+          firstName: whatsappName
+        }
+      })
+    }
+
+    return client
   }
 
   private async handleCompany(whatsappId: string) {
     return await this.prisma.company.findFirst({
       where: {
+        disabledAt: null,
         Whatsapp: {
           some: { whatsappId }
         }
+      },
+      include: {
+        Conversation: true,
+        Department: true,
+        Whatsapp: true
       }
     })
   }
@@ -320,5 +438,68 @@ export class WhatsappService {
       },
       message: dto?.entry[0]?.changes[0]?.value?.messages[0]
     }
+  }
+
+  private async send(
+    businessId: string,
+    toId: string,
+    departments: any[],
+    type?: string,
+    body?: string
+  ) {
+    if (type === 'text') {
+      await fetch(`${process.env.WHATSAPP_URL}/${businessId}/messages`, {
+        method: 'POST',
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          to: toId,
+          type: 'text',
+          text: { body }
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.META_APP_TOKEN}`
+        }
+      })
+      return
+    }
+
+    await fetch(`${process.env.WHATSAPP_URL}/${businessId}/messages`, {
+      method: 'POST',
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        to: toId,
+        type: 'interactive',
+        interactive: {
+          type: 'list',
+          header: {
+            type: 'text',
+            text: 'Escolha o departamento onde deseja atendimento'
+          },
+          body: {
+            text: 'Abaixo algumas opções a seu dispor neste atendimento'
+          },
+          footer: undefined,
+          action: {
+            button: 'Departamentos',
+            sections: [
+              {
+                title: 'Departamentos',
+                rows: departments.map((el) => ({
+                  id: el.id,
+                  title: el.name
+                }))
+              }
+            ]
+          }
+        }
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.META_APP_TOKEN}`
+      }
+    }).then(async (el) => console.log(await el.json()))
+
+    return
   }
 }

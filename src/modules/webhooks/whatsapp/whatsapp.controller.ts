@@ -1,19 +1,19 @@
-import { HttpCode, HttpStatus } from '@nestjs/common'
-import { Controller } from '@nestjs/common/decorators/core/controller.decorator'
+import { HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller } from '@nestjs/common/decorators/core/controller.decorator';
 import {
   Get,
   Post
-} from '@nestjs/common/decorators/http/request-mapping.decorator'
+} from '@nestjs/common/decorators/http/request-mapping.decorator';
 import {
   Body,
   Query
-} from '@nestjs/common/decorators/http/route-params.decorator'
-import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception'
-import { Logger } from '@nestjs/common/services/logger.service'
-import { ApiExcludeController } from '@nestjs/swagger'
-import { IsPublic } from '../../../common/decorators/custom/is-public.decorator'
-import { RequestReceiveDto } from './dto/request-receive.dto'
-import { WhatsappService } from './whatsapp.service'
+} from '@nestjs/common/decorators/http/route-params.decorator';
+import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
+import { Logger } from '@nestjs/common/services/logger.service';
+import { ApiExcludeController } from '@nestjs/swagger';
+import { IsPublic } from '../../../common/decorators/custom/is-public.decorator';
+import { RequestReceiveDto } from './dto/request-receive.dto';
+import { WhatsappService } from './whatsapp.service';
 
 @ApiExcludeController()
 @Controller('whatsapp/webhook')
@@ -27,17 +27,17 @@ export class WhatsappController {
     @Query('hub.verify_token') verifyToken: string,
     @Query('hub.challenge') challenge: any
   ) {
-    const subscribeMode = mode == 'subscribe'
-    const tokenMatch = verifyToken == process.env.WHATSAPP_VERIFY_TOKEN
+    const subscribeMode = mode == 'subscribe';
+    const tokenMatch = verifyToken == process.env.WHATSAPP_VERIFY_TOKEN;
 
     if (!subscribeMode || !tokenMatch) {
       Logger.error(
         'Failed validation whatsapp. Make sure the validation tokens match.'
-      )
-      throw new BadRequestException()
+      );
+      throw new BadRequestException();
     }
 
-    return challenge
+    return challenge;
   }
 
   @IsPublic()
@@ -45,16 +45,15 @@ export class WhatsappController {
   @HttpCode(HttpStatus.OK)
   async post(@Body() dto: RequestReceiveDto) {
     if (dto.entry[0].changes[0].value.statuses) {
-      console.log(dto.entry[0].changes[0].value.statuses)
-      return
+      return;
     }
 
-    const data = this.service.handleDto(dto)
+    const data = this.service.handleDto(dto);
 
     try {
-      this.service.execute(data)
+      this.service.execute(data);
     } catch (err: any) {
-      Logger.error(err)
+      Logger.error(err);
     }
   }
 }

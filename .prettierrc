@@ -2,5 +2,5 @@
   "singleQuote": true,
   "trailingComma": "none",
   "endOfLine": "auto",
-  "semi": false
+  "semi": true
 }

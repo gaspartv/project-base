@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
-import { JwtService } from '@nestjs/jwt'
-import { MessageDto } from '../../common/dto/message.dto'
-import { IJwtPayload } from '../../common/interfaces/jwt-payload.interface'
-import { GeneratorDate } from '../../common/utils/generator-date'
-import { UserResponseEntity } from '../../modules/users/entities/user.entity'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { JwtService } from '@nestjs/jwt';
+import { MessageDto } from '../../common/dto/message.dto';
+import { IJwtPayload } from '../../common/interfaces/jwt-payload.interface';
+import { GeneratorDate } from '../../common/utils/generator-date';
 import {
   SessionEntity,
   SessionResponseEntity
-} from '../sessions/entities/session.entity'
-import { SessionsRepository } from '../sessions/repositories/sessions.repository'
-import { ResponseLoginDto } from './dto/response/response-login.dto'
+} from '../sessions/entities/session.entity';
+import { SessionsRepository } from '../sessions/repositories/sessions.repository';
+import { UserResponseEntity } from '../users/user.entity';
+import { ResponseLoginDto } from './dto/response/response-login.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,37 +19,37 @@ export class AuthService {
   ) {}
 
   async login(user: UserResponseEntity): Promise<ResponseLoginDto> {
-    await this.sessionsRepository.disconnectedMany(user.id)
+    await this.sessionsRepository.disconnectedMany(user.id);
 
-    const expiresAt: Date = GeneratorDate.expiresAt()
+    const expiresAt: Date = GeneratorDate.expiresAt();
 
     const entity: SessionEntity = new SessionEntity({
       userId: user.id,
       expiresAt,
       tokens: []
-    })
+    });
 
     const session: SessionResponseEntity =
-      await this.sessionsRepository.create(entity)
+      await this.sessionsRepository.create(entity);
 
     const payload: IJwtPayload = {
       sign: {
         sub: user.id,
         sessionId: session.id
       }
-    }
+    };
 
-    const token: string = this.jwtService.sign(payload)
+    const token: string = this.jwtService.sign(payload);
 
     return ResponseLoginDto.handle({
       token,
       user
-    })
+    });
   }
 
   async logout(userId: string): Promise<MessageDto> {
-    await this.sessionsRepository.disconnectedMany(userId)
+    await this.sessionsRepository.disconnectedMany(userId);
 
-    return { message: 'logout successfully' }
+    return { message: 'logout successfully' };
   }
 }

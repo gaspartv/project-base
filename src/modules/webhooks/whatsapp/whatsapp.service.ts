@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
-import { Message, Prisma } from '@prisma/client'
-import { exec } from 'child_process'
-import { generateRequestNumber } from '../../../common/utils/generator-random-number.util'
-import { PrismaService } from '../../../config/prisma/prisma.service'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { Message, Prisma } from '@prisma/client';
+import { exec } from 'child_process';
+import { generateRequestNumber } from '../../../common/utils/generator-random-number.util';
+import { PrismaService } from '../../../config/prisma/prisma.service';
 import {
   MessageReceiveDto,
   MessageReceiveType
-} from './dto/message-receive.dto'
-import { RequestDataDto } from './dto/request-data.dto'
-import { RequestReceiveDto } from './dto/request-receive.dto'
+} from './dto/message-receive.dto';
+import { RequestDataDto } from './dto/request-data.dto';
+import { RequestReceiveDto } from './dto/request-receive.dto';
 
 @Injectable()
 export class WhatsappService {
@@ -16,23 +16,23 @@ export class WhatsappService {
 
   async execute(dto: RequestDataDto) {
     if (dto.changeField !== 'messages' || dto.provider !== 'whatsapp') {
-      return
+      return;
     }
 
-    const handleCompany = await this.handleCompany(dto.business.id)
+    const handleCompany = await this.handleCompany(dto.business.id);
 
     if (!handleCompany) {
-      return
+      return;
     }
 
     const handleClient = await this.handleClient(
       dto.contact.id,
       dto.contact.name,
       handleCompany.id
-    )
+    );
 
     if (!handleClient) {
-      return
+      return;
     }
 
     const handleChat = await this.handleChat(
@@ -41,21 +41,21 @@ export class WhatsappService {
       handleClient.id,
       handleCompany.id,
       dto.business.id
-    )
+    );
 
     const handleMessage = await this.handleMessage(
       dto.message,
       handleChat.id,
       handleChat.attendantId
-    )
+    );
     /// EMITIR A MESSAGE DO handleMessage PARA O FRONT ///
 
     if (handleChat.departmentId === null) {
-      console.log(handleMessage)
+      console.log(handleMessage);
       const messageSplit = [
         dto.message?.interactive?.list_reply?.id || undefined,
         handleMessage.body
-      ]
+      ];
 
       const handleChatBot = await this.handleChatBot(
         handleCompany.Conversation,
@@ -64,10 +64,10 @@ export class WhatsappService {
         handleChat.id,
         dto.contact.id,
         handleCompany.Whatsapp[0].whatsappId
-      )
+      );
     }
 
-    return
+    return;
 
     // await fetch(
     //   `${process.env.WHATSAPP_URL}/${process.env.META_WHATSAPP_ID}/messages`,
@@ -96,17 +96,17 @@ export class WhatsappService {
     businessId: string
   ) {
     const speakAttendant = conversations.find((el) => {
-      if (el.id === messageSplit[0]) return true
+      if (el.id === messageSplit[0]) return true;
       if (messageSplit[1]) {
         if (el.header.toLowerCase() === messageSplit[1].toLowerCase()) {
-          return true
+          return true;
         }
       } else {
         if (el.header.toLowerCase() === messageSplit[0].toLowerCase()) {
-          return true
+          return true;
         }
       }
-    })
+    });
 
     if (speakAttendant) {
       if (speakAttendant.header.toLowerCase() === 'falar com atendente') {
@@ -114,13 +114,13 @@ export class WhatsappService {
           await this.prisma.chat.update({
             where: { id: chatId },
             data: { departmentId: departments[0].id }
-          })
+          });
 
           // AVISAR O FRONT QUE O DEPARTAMENTO FOI ATUALIZADO
           // this.webSocketService.getServer().emit(departments[0].id, true)
 
           const textToSend =
-            'Você esta na fila de atendimento em breve um de nossos atendentes ira lhe responder.'
+            'Você esta na fila de atendimento em breve um de nossos atendentes ira lhe responder.';
 
           await this.send(
             businessId,
@@ -128,35 +128,35 @@ export class WhatsappService {
             departments,
             'text',
             textToSend
-          )
+          );
 
-          return 'finish'
+          return 'finish';
         }
       }
     }
 
-    await this.send(businessId, contactId, departments, null, null)
+    await this.send(businessId, contactId, departments, null, null);
 
-    return 'finish'
+    return 'finish';
   }
 
   private async handleFileDownload(id: string, type: string): Promise<string> {
-    const urlAudio = process.env.WHATSAPP_URL + id
+    const urlAudio = process.env.WHATSAPP_URL + id;
 
     const resAudio = await fetch(urlAudio, {
       method: 'GET',
       headers: { Authorization: `Bearer ${process.env.META_APP_TOKEN}` }
-    }).then((el) => el.json())
+    }).then((el) => el.json());
 
     const pathDirImage = `/tmp/whatsapp/${type}/${resAudio.id}.${
       resAudio.mime_type.split('/')[1]
-    }`
+    }`;
 
-    const curlAudioCommand = `curl -X GET '${resAudio.url}' -H 'Authorization: Bearer ${process.env.META_APP_TOKEN}' > .${pathDirImage}`
+    const curlAudioCommand = `curl -X GET '${resAudio.url}' -H 'Authorization: Bearer ${process.env.META_APP_TOKEN}' > .${pathDirImage}`;
 
-    exec(curlAudioCommand)
+    exec(curlAudioCommand);
 
-    return pathDirImage
+    return pathDirImage;
   }
 
   private async handleMessage(
@@ -164,9 +164,7 @@ export class WhatsappService {
     chatId: string,
     chatAttendantId?: string
   ) {
-    let data: Prisma.MessageUncheckedCreateInput
-
-    console.log(dto.type)
+    let data: Prisma.MessageUncheckedCreateInput;
 
     switch (dto.type) {
       case MessageReceiveType.TEXT:
@@ -178,15 +176,15 @@ export class WhatsappService {
           status: 'READ',
           integrationId: dto.id,
           chatAttendantId
-        }
+        };
 
-        break
+        break;
 
       case MessageReceiveType.AUDIO:
         const pathDirAudio = await this.handleFileDownload(
           dto.audio.id,
           'audio'
-        )
+        );
 
         data = {
           body: pathDirAudio,
@@ -196,14 +194,14 @@ export class WhatsappService {
           status: 'READ',
           integrationId: dto.id,
           chatAttendantId
-        }
-        break
+        };
+        break;
 
       case MessageReceiveType.DOCUMENT:
         const pathDirDocument = await this.handleFileDownload(
           dto.document.id,
           'document'
-        )
+        );
 
         data = {
           body: pathDirDocument,
@@ -213,15 +211,15 @@ export class WhatsappService {
           status: 'READ',
           integrationId: dto.id,
           chatAttendantId
-        }
+        };
 
-        break
+        break;
 
       case MessageReceiveType.IMAGE:
         const pathDirImage = await this.handleFileDownload(
           dto.image.id,
           'image'
-        )
+        );
 
         data = {
           body: pathDirImage,
@@ -231,15 +229,15 @@ export class WhatsappService {
           status: 'READ',
           integrationId: dto.id,
           chatAttendantId
-        }
+        };
 
-        break
+        break;
 
       case MessageReceiveType.VIDEO:
         const pathDirVideo = await this.handleFileDownload(
           dto.video.id,
           'video'
-        )
+        );
 
         data = {
           body: pathDirVideo,
@@ -249,15 +247,15 @@ export class WhatsappService {
           status: 'READ',
           integrationId: dto.id,
           chatAttendantId
-        }
+        };
 
-        break
+        break;
 
       case MessageReceiveType.STICKER:
         const pathDirSticker = await this.handleFileDownload(
           dto.sticker.id,
           'sticker'
-        )
+        );
 
         data = {
           body: pathDirSticker,
@@ -267,9 +265,9 @@ export class WhatsappService {
           status: 'READ',
           integrationId: dto.id,
           chatAttendantId
-        }
+        };
 
-        break
+        break;
 
       case MessageReceiveType.CONTACTS:
         data = {
@@ -280,9 +278,9 @@ export class WhatsappService {
           status: 'READ',
           integrationId: dto.id,
           chatAttendantId
-        }
+        };
 
-        break
+        break;
 
       case MessageReceiveType.LOCATION:
         data = {
@@ -293,9 +291,9 @@ export class WhatsappService {
           status: 'READ',
           integrationId: dto.id,
           chatAttendantId
-        }
+        };
 
-        break
+        break;
 
       case MessageReceiveType.REACTION:
         await this.prisma.reaction.create({
@@ -305,9 +303,9 @@ export class WhatsappService {
               connect: { integrationId: dto.reaction.message_id }
             }
           }
-        })
+        });
 
-        break
+        break;
 
       case MessageReceiveType.UNSUPPORTED:
       case MessageReceiveType.INTERACTIVE:
@@ -319,19 +317,19 @@ export class WhatsappService {
           status: 'READ',
           integrationId: dto.id,
           chatAttendantId
-        }
-        console.log(dto.interactive.list_reply.title)
-        break
+        };
+        console.log(dto.interactive.list_reply.title);
+        break;
       default:
-        return
+        return;
     }
 
-    let message: Message
+    let message: Message;
 
     if (dto.type !== MessageReceiveType.REACTION) {
       message = await this.prisma.message.create({
         data
-      })
+      });
     }
 
     await fetch(
@@ -348,9 +346,9 @@ export class WhatsappService {
           Authorization: `Bearer ${process.env.META_APP_TOKEN}`
         }
       }
-    )
+    );
 
-    return message
+    return message;
   }
 
   private async handleChat(
@@ -362,11 +360,11 @@ export class WhatsappService {
   ) {
     const chat = await this.prisma.chat.findFirst({
       where: { type: 'WHATSAPP', closedAt: null, companyId, clientId }
-    })
+    });
 
-    if (chat) return chat
+    if (chat) return chat;
 
-    const requestNumber = generateRequestNumber()
+    const requestNumber = generateRequestNumber();
 
     return await this.prisma.chat.create({
       data: {
@@ -378,7 +376,7 @@ export class WhatsappService {
         contactId,
         contactName
       }
-    })
+    });
   }
 
   private async handleClient(
@@ -388,10 +386,10 @@ export class WhatsappService {
   ) {
     const client = await this.prisma.client.findFirst({
       where: { whatsappId }
-    })
+    });
 
     if (!client) {
-      const code = generateRequestNumber()
+      const code = generateRequestNumber();
 
       return await this.prisma.client.create({
         data: {
@@ -401,10 +399,10 @@ export class WhatsappService {
           code,
           firstName: whatsappName
         }
-      })
+      });
     }
 
-    return client
+    return client;
   }
 
   private async handleCompany(whatsappId: string) {
@@ -420,7 +418,7 @@ export class WhatsappService {
         Department: true,
         Whatsapp: true
       }
-    })
+    });
   }
 
   handleDto(dto: RequestReceiveDto) {
@@ -437,7 +435,7 @@ export class WhatsappService {
         name: dto?.entry[0]?.changes[0]?.value?.contacts[0]?.profile?.name
       },
       message: dto?.entry[0]?.changes[0]?.value?.messages[0]
-    }
+    };
   }
 
   private async send(
@@ -460,8 +458,8 @@ export class WhatsappService {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${process.env.META_APP_TOKEN}`
         }
-      })
-      return
+      });
+      return;
     }
 
     await fetch(`${process.env.WHATSAPP_URL}/${businessId}/messages`, {
@@ -498,8 +496,8 @@ export class WhatsappService {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${process.env.META_APP_TOKEN}`
       }
-    }).then(async (el) => console.log(await el.json()))
+    }).then(async (el) => console.log(await el.json()));
 
-    return
+    return;
   }
 }

@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
-import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception'
-import { CanActivate } from '@nestjs/common/interfaces/features/can-activate.interface'
-import { ExecutionContext } from '@nestjs/common/interfaces/features/execution-context.interface'
-import { Logger } from '@nestjs/common/services/logger.service'
-import { Reflector } from '@nestjs/core/services/reflector.service'
-import { compare } from 'bcryptjs'
-import { UserEntity } from '../../modules/users/entities/user.entity'
-import { UsersRepository } from '../../modules/users/repositories/users.repository'
-import { IS_PASSWORD_CHECK_REQUIRED } from '../decorators/custom/check-password.decorator'
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception';
+import { CanActivate } from '@nestjs/common/interfaces/features/can-activate.interface';
+import { ExecutionContext } from '@nestjs/common/interfaces/features/execution-context.interface';
+import { Logger } from '@nestjs/common/services/logger.service';
+import { Reflector } from '@nestjs/core/services/reflector.service';
+import { compare } from 'bcryptjs';
+import { UsersRepository } from '../../modules/users/repositories/users.repository';
+import { UserEntity } from '../../modules/users/user.entity';
+import { IS_PASSWORD_CHECK_REQUIRED } from '../decorators/custom/check-password.decorator';
 
 @Injectable()
 export class CheckPasswordGuard implements CanActivate {
@@ -21,17 +21,17 @@ export class CheckPasswordGuard implements CanActivate {
       this.reflector.getAllAndOverride<boolean>(IS_PASSWORD_CHECK_REQUIRED, [
         context.getHandler(),
         context.getClass()
-      ])
+      ]);
 
     if (!requirePasswordCheck) {
-      return true
+      return true;
     }
 
-    const request = context.switchToHttp().getRequest()
+    const request = context.switchToHttp().getRequest();
 
-    await this.validate(this.extract(request), request.raw.url)
+    await this.validate(this.extract(request), request.raw.url);
 
-    return true
+    return true;
   }
 
   async validate(
@@ -41,38 +41,38 @@ export class CheckPasswordGuard implements CanActivate {
     const user: UserEntity = await this.usersRepository.findOneWhere({
       deletedAt: null,
       disabledAt: url.includes('users/enable') ? undefined : null
-    })
+    });
 
     if (!user) {
-      throw new UnauthorizedException('invalid credentials')
+      throw new UnauthorizedException('invalid credentials');
     }
 
     const passwordValid: boolean = await compare(
       data.password,
       user.passwordHash
-    )
+    );
 
     if (!passwordValid) {
-      throw new UnauthorizedException('invalid credentials')
+      throw new UnauthorizedException('invalid credentials');
     }
 
-    return
+    return;
   }
 
   extract(req: any) {
     try {
       const validateCredential: boolean =
-        !req.user.sign.sub || !req.body.password
+        !req.user.sign.sub || !req.body.password;
 
       if (validateCredential) {
-        throw new UnauthorizedException('invalid credentials')
+        throw new UnauthorizedException('invalid credentials');
       }
 
-      return { sub: req.user.sign.sub, password: req.body.password }
+      return { sub: req.user.sign.sub, password: req.body.password };
     } catch (err) {
-      Logger.error(err)
+      Logger.error(err);
 
-      throw new UnauthorizedException('invalid credentials')
+      throw new UnauthorizedException('invalid credentials');
     }
   }
 }
